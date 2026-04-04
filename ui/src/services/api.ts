@@ -1,0 +1,44 @@
+import type { RequestRecord, ProxyConfig, ApiResponse } from '../types'
+
+const BASE_URL = ''
+
+export async function fetchRequests(
+  params: Record<string, string> = {}
+): Promise<ApiResponse<RequestRecord[]>> {
+  const query = new URLSearchParams(params)
+  const res = await fetch(`${BASE_URL}/api/requests?${query}`)
+  if (!res.ok) throw new Error(`Failed to fetch requests: ${res.statusText}`)
+  return res.json()
+}
+
+export async function fetchRequest(id: string): Promise<RequestRecord> {
+  const res = await fetch(`${BASE_URL}/api/requests/${id}`)
+  if (!res.ok) throw new Error(`Failed to fetch request: ${res.statusText}`)
+  return res.json()
+}
+
+export async function clearRequests(): Promise<void> {
+  const res = await fetch(`${BASE_URL}/api/requests`, { method: 'DELETE' })
+  if (!res.ok) throw new Error(`Failed to clear requests: ${res.statusText}`)
+}
+
+export async function fetchConfig(): Promise<ProxyConfig> {
+  const res = await fetch(`${BASE_URL}/api/config`)
+  if (!res.ok) throw new Error(`Failed to fetch config: ${res.statusText}`)
+  return res.json()
+}
+
+export async function fetchHealth(): Promise<{ status: string; uptime: number }> {
+  const res = await fetch(`${BASE_URL}/api/health`)
+  if (!res.ok) throw new Error(`Failed to fetch health: ${res.statusText}`)
+  return res.json()
+}
+
+export function getCACertUrl(): string {
+  return `${BASE_URL}/api/ca-cert`
+}
+
+export function getWebSocketUrl(): string {
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+  return `${protocol}//${window.location.host}/ws`
+}

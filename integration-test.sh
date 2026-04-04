@@ -123,7 +123,7 @@ PROXY_URL="http://localhost:$PROXY_PORT"
 
 # Test request 1: GET with query params
 echo "  📋 Making GET request..."
-GET_RESPONSE=$(curl -s -x "$PROXY_URL" "https://httpbin.org/get?test=integration&timestamp=$(date -u +%s)" || echo "FAILED")
+GET_RESPONSE=$(curl -sk -x "$PROXY_URL" "https://httpbin.org/get?test=integration&timestamp=$(date -u +%s)" || echo "FAILED")
 if [[ "$GET_RESPONSE" != "FAILED" ]]; then
   echo "    ✅ GET request successful"
 else
@@ -134,7 +134,7 @@ fi
 # Test request 2: POST with JSON
 echo "  📋 Making POST request..."
 POST_DATA='{"test":"integration","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","random":'$(($RANDOM % 1000))'}'
-POST_RESPONSE=$(curl -s -x "$PROXY_URL" -H "Content-Type: application/json" \
+POST_RESPONSE=$(curl -sk -x "$PROXY_URL" -H "Content-Type: application/json" \
   -d "$POST_DATA" "https://httpbin.org/post" || echo "FAILED")
 if [[ "$POST_RESPONSE" != "FAILED" ]]; then
   echo "    ✅ POST request successful"
@@ -145,7 +145,7 @@ fi
 
 # Test request 3: Request with custom headers
 echo "  📋 Making request with custom headers..."
-HEADERS_RESPONSE=$(curl -s -x "$PROXY_URL" -H "X-Test-Header: integration-test-value" \
+HEADERS_RESPONSE=$(curl -sk -x "$PROXY_URL" -H "X-Test-Header: integration-test-value" \
   -H "X-Client: http-mitm-proxy-ui-e2e-test" "https://httpbin.org/headers" || echo "FAILED")
 if [[ "$HEADERS_RESPONSE" != "FAILED" ]]; then
   echo "    ✅ Headers request successful"
@@ -256,7 +256,7 @@ fi
 # Verify history is actually cleared
 echo "  📋 Verifying history is empty after clear..."
 CLEAR_COUNT_RESPONSE=$(curl -s "http://localhost:$UI_PORT/api/requests?limit=1")
-CLEAR_COUNT=$(echo "$CLEAR_COUNT_RESPONSE" | grep -o '"total":[0-9]*" | cut -d':' -f2 | tr -d ' ')
+CLEAR_COUNT=$(echo "$CLEAR_COUNT_RESPONSE" | grep -o '"total":[0-9]*' | cut -d':' -f2 | tr -d ' ')
 if [[ -z "$CLEAR_COUNT" ]]; then CLEAR_COUNT=0; fi
 if [[ "$CLEAR_COUNT" -eq 0 ]]; then
   echo "    ✅ History verified empty after clear"

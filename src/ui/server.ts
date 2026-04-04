@@ -36,7 +36,7 @@ export class UIServer extends EventEmitter {
     super();
     this.proxy = proxy;
     this.config = config;
-    this.uiDistPath = path.resolve(__dirname, '../dist/ui');
+    this.uiDistPath = path.resolve(__dirname, '..', 'public');
     this.app = express();
     this.httpServer = createServer(this.app);
     this.wss = new WebSocketServer({ server: this.httpServer, path: '/ws' });
