@@ -7,9 +7,10 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "bash integration-test.sh",
     "build": "tsc && npx vite build --base ./",
     "format": "prettier --write \"src/**/*.{ts,js}\" \"ui/src/**/*.{vue,ts,js,css}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,js}\" \"ui/src/**/*.{vue,ts,js,css}\"",
     "dev": "concurrently \"tsc -w\" \"vite dev --port 5173\"",
     "start": "node dist/index.js",
     "prepare": "npm run build",
