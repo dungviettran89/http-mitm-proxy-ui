@@ -37,6 +37,9 @@ Thumbs.db
 # Certificate directory (contains sensitive keys)
 .http-mitm-proxy-ui/
 
+# Request database
+requests-db.json
+
 # Build outputs
 src/**/*.js
 src/**/*.js.map

@@ -32,9 +32,25 @@ watch(
   { immediate: true }
 )
 
-function formatBody(body: string | Buffer | undefined, contentType?: string): string {
+function bodyToString(body: unknown): string {
+  if (!body) return ''
+  // Already a string
+  if (typeof body === 'string') return body
+  // Buffer-like object (from JSON-serialized Buffer: { type: 'Buffer', data: [...] })
+  if (typeof body === 'object' && 'data' in body && Array.isArray((body as any).data)) {
+    return String.fromCharCode(...(body as any).data)
+  }
+  // Actual Buffer
+  if (typeof body === 'object' && 'byteLength' in body) {
+    return (body as Buffer).toString('utf-8')
+  }
+  // Fallback: stringify unknown objects
+  return JSON.stringify(body, null, 2)
+}
+
+function formatBody(body: unknown, contentType?: string): string {
   if (!body) return '(empty)'
-  const str = typeof body === 'string' ? body : body.toString('utf-8')
+  const str = bodyToString(body)
   // Try to format JSON nicely
   if (contentType?.includes('json') || str.trim().startsWith('{') || str.trim().startsWith('[')) {
     try {
@@ -46,9 +62,22 @@ function formatBody(body: string | Buffer | undefined, contentType?: string): st
   return str
 }
 
-function formatSize(bytes: string | Buffer | undefined): string {
+function formatSize(bytes: unknown): string {
   if (!bytes) return '0 B'
-  const len = typeof bytes === 'string' ? new Blob([bytes]).size : bytes.byteLength
+  let len: number
+  if (typeof bytes === 'string') {
+    len = new Blob([bytes]).size
+  } else if (typeof bytes === 'object' && 'byteLength' in bytes) {
+    len = (bytes as Buffer).byteLength
+  } else if (typeof bytes === 'object' && 'data' in bytes && Array.isArray((bytes as any).data)) {
+    // JSON-serialized Buffer: { type: 'Buffer', data: [number, ...] }
+    len = (bytes as any).data.length
+  } else if (typeof bytes === 'object') {
+    // Fallback: estimate from JSON stringified size
+    len = new Blob([JSON.stringify(bytes)]).size
+  } else {
+    return '0 B'
+  }
   if (len < 1024) return `${len} B`
   if (len < 1024 * 1024) return `${(len / 1024).toFixed(1)} KB`
   return `${(len / (1024 * 1024)).toFixed(1)} MB`
@@ -96,9 +125,16 @@ function handleKeydown(event: KeyboardEvent): void {
           <template v-else>Request Details</template>
         </h2>
         <button class="btn-close" @click="emit('close')" title="Close (Escape)">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"/>
-            <line x1="6" y1="6" x2="18" y2="18"/>
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
         </button>
       </div>
@@ -152,11 +188,16 @@ function handleKeydown(event: KeyboardEvent): void {
             <div v-if="request.response" class="detail-section">
               <h3>
                 Response Body
-                <span class="status-badge" :class="request.response.statusCode >= 400 ? 'status-4xx' : 'status-2xx'">
+                <span
+                  class="status-badge"
+                  :class="request.response.statusCode >= 400 ? 'status-4xx' : 'status-2xx'"
+                >
                   {{ request.response.statusCode }}
                 </span>
               </h3>
-              <pre class="body-content">{{ formatBody(request.response.body, request.response.contentType) }}</pre>
+              <pre class="body-content">{{
+                formatBody(request.response.body, request.response.contentType)
+              }}</pre>
             </div>
             <div v-else class="detail-section">
               <p class="no-response">No response received yet.</p>
@@ -164,7 +205,9 @@ function handleKeydown(event: KeyboardEvent): void {
             <div class="detail-meta">
               <div class="meta-item">
                 <span class="meta-label">Size:</span>
-                <span class="meta-value">{{ request.response ? formatSize(request.response.body) : '—' }}</span>
+                <span class="meta-value">{{
+                  request.response ? formatSize(request.response.body) : '—'
+                }}</span>
               </div>
               <div class="meta-item">
                 <span class="meta-label">Content-Type:</span>
@@ -214,12 +257,18 @@ function handleKeydown(event: KeyboardEvent): void {
                 </div>
                 <div class="meta-item" v-if="request.response?.responseTime">
                   <span class="meta-label">Response Time:</span>
-                  <span class="meta-value">{{ formatDuration(request.response.responseTime) }}</span>
+                  <span class="meta-value">{{
+                    formatDuration(request.response.responseTime)
+                  }}</span>
                 </div>
                 <div class="meta-item">
                   <span class="meta-label">Total Duration:</span>
                   <span class="meta-value">
-                    {{ request.response?.responseTime ? formatDuration(request.response.responseTime) : formatDuration(request.requestTime) }}
+                    {{
+                      request.response?.responseTime
+                        ? formatDuration(request.response.responseTime)
+                        : formatDuration(request.requestTime)
+                    }}
                   </span>
                 </div>
               </div>
@@ -233,7 +282,9 @@ function handleKeydown(event: KeyboardEvent): void {
                 </div>
                 <div class="meta-item">
                   <span class="meta-label">Response Size:</span>
-                  <span class="meta-value">{{ request.response ? formatSize(request.response.body) : '—' }}</span>
+                  <span class="meta-value">{{
+                    request.response ? formatSize(request.response.body) : '—'
+                  }}</span>
                 </div>
               </div>
             </div>

@@ -106,8 +106,8 @@ export class UIServer extends EventEmitter {
     })
 
     // DELETE /api/requests — clear history
-    this.app.delete('/api/requests', (_req: Request, res: Response) => {
-      this.proxy.clearRequests()
+    this.app.delete('/api/requests', async (_req: Request, res: Response) => {
+      await this.proxy.clearRequests()
       this.broadcast({ type: 'clear', data: {} })
       res.json({ message: 'Requests cleared' })
     })
