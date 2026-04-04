@@ -1,0 +1,18 @@
+{
+  "name": "http-mitm-proxy-ui-test-clients",
+  "version": "1.0.0",
+  "description": "Test clients for http-mitm-proxy-ui package",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "http",
+    "proxy",
+    "mitm",
+    "testing",
+    "postman-echo"
+  ],
+  "author": "Dung Tran",
+  "license": "ISC"
+}
