@@ -16,7 +16,10 @@ A self-contained Node.js package that bundles `http-mitm-proxy` with a modern we
 - **REST API**: Programmatic access to traffic data and configuration
 - **Material Design UI**: Clean, responsive interface with red/black on white theme
 
-📖 **[User Guide](guides/USER-GUIDE.md)** — Complete documentation with screenshots
+## Guides
+
+- 📖 **[User Guide](guides/USER-GUIDE.md)** — Complete documentation with screenshots
+- 🔍 **[Qwen Code Use Cases](guides/use-cases-qwen-code.md)** — Inspect Qwen Code API traffic with examples
 
 ## Installation
 
