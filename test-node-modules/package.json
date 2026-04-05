@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "http-mitm-proxy-ui": "file:../http-mitm-proxy-ui-1.0.0.tgz"
+  }
+}

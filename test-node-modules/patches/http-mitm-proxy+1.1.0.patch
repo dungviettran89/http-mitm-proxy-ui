@@ -1,0 +1,53 @@
+diff --git a/node_modules/http-mitm-proxy/dist/lib/proxy.js b/node_modules/http-mitm-proxy/dist/lib/proxy.js
+index e896595..d30ce5d 100644
+--- a/node_modules/http-mitm-proxy/dist/lib/proxy.js
++++ b/node_modules/http-mitm-proxy/dist/lib/proxy.js
+@@ -69,7 +69,7 @@ class Proxy {
+         const self = this;
+         this.options = options || {};
+         this.httpPort = options.port || options.port === 0 ? options.port : 8080;
+-        this.httpHost = options.host || "localhost";
++        this.httpHost = options.host || "127.0.0.1";
+         this.timeout = options.timeout || 0;
+         this.keepAlive = !!options.keepAlive;
+         this.httpAgent =
+@@ -147,7 +147,7 @@ class Proxy {
+         });
+         const listenOptions = {
+             port: 0,
+-            host: "0.0.0.0",
++            host: "127.0.0.1",
+         };
+         if (this.httpsPort && !options.hosts) {
+             listenOptions.port = this.httpsPort;
+@@ -361,7 +361,7 @@ class Proxy {
+         function makeConnection(port) {
+             const conn = net_1.default.connect({
+                 port,
+-                host: "0.0.0.0",
++                host: "127.0.0.1",
+                 allowHalfOpen: true,
+             }, () => {
+                 const connectKey = `${conn.localPort}:${conn.remotePort}`;
+diff --git a/node_modules/http-mitm-proxy/lib/proxy.ts b/node_modules/http-mitm-proxy/lib/proxy.ts
+index 5a8154e..da79df7 100644
+--- a/node_modules/http-mitm-proxy/lib/proxy.ts
++++ b/node_modules/http-mitm-proxy/lib/proxy.ts
+@@ -216,7 +216,7 @@ export class Proxy implements IProxy {
+     // port 0 to get the first available port
+     const listenOptions = {
+       port: 0,
+-      host: "0.0.0.0",
++      host: "127.0.0.1",
+     };
+     if (this.httpsPort && !options.hosts) {
+       listenOptions.port = this.httpsPort;
+@@ -487,7 +487,7 @@ export class Proxy implements IProxy {
+       const conn = net.connect(
+         {
+           port,
+-          host: "0.0.0.0",
++          host: "127.0.0.1",
+           allowHalfOpen: true,
+         },
+ 

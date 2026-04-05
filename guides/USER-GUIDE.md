@@ -53,6 +53,8 @@ npx http-mitm-proxy-ui --proxy-port 9090 --ui-port 4000
 | `--ui-port <port>` | Web UI server port | 3000 |
 | `--headless` | Run proxy only (no UI) | false |
 | `--ssl-ca-dir <path>` | Directory for SSL CA certificates | `~/.http-mitm-proxy-ui/ca` |
+| `--ca-cert <path>` | Path to custom CA certificate file (.pem) | — |
+| `--ca-key <path>` | Path to custom CA private key file (.pem) | — |
 | `--max-requests <count>` | Max requests to keep in memory | 1000 |
 | `--no-modification` | Disable request/response modification | false |
 | `--config <path>` | Path to a JSON config file | — |
@@ -83,6 +85,30 @@ sudo update-ca-certificates
 1. Download from `http://localhost:3000/api/ca-cert`
 2. Double-click the `.pem` file
 3. Click **Install Certificate** → **Local Machine** → **Place all certificates in the following store** → **Trusted Root Certification Authorities**
+
+### Using a Custom CA Certificate
+
+If you already have a CA certificate and key (e.g., from a corporate PKI or a previous proxy setup), you can use them instead of the auto-generated certificate:
+
+```bash
+npx http-mitm-proxy-ui --ca-cert /path/to/my-ca.pem --ca-key /path/to/my-ca.key
+```
+
+Both `--ca-cert` and `--ca-key` must be provided together. The files are copied into the `--ssl-ca-dir` (default: `~/.http-mitm-proxy-ui/ca`) in the format expected by the proxy. When omitted, a new CA is auto-generated on first run.
+
+You can also set these in a JSON config file:
+
+```json
+{
+  "caCertPath": "/path/to/my-ca.pem",
+  "caKeyPath": "/path/to/my-ca.key"
+}
+```
+
+This is useful when:
+- Your organization requires a specific CA certificate for compliance
+- You want to reuse the same CA across multiple machines or sessions
+- You've already trusted a CA certificate on your devices and don't want to re-trust a new one
 
 ### Configuring Applications
 

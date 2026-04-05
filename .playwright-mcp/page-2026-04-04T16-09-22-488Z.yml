@@ -1,0 +1,105 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - heading "MITM Proxy UI" [level=1] [ref=e6]:
+      - img [ref=e7]
+      - text: MITM Proxy UI
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - text: "Proxy:"
+        - strong [ref=e12]: running
+        - text: · Port 19090
+      - generic [ref=e13]:
+        - text: "Requests:"
+        - strong [ref=e14]: "2"
+    - generic [ref=e15]:
+      - button "CA Cert" [ref=e16] [cursor=pointer]:
+        - img [ref=e17]
+        - text: CA Cert
+      - button "Clear" [ref=e19] [cursor=pointer]:
+        - img [ref=e20]
+        - text: Clear
+  - generic [ref=e22]:
+    - generic [ref=e23]:
+      - generic [ref=e24]:
+        - generic [ref=e25]: "Method:"
+        - combobox "Method:" [ref=e26]:
+          - option "All" [selected]
+          - option "GET"
+          - option "POST"
+          - option "PUT"
+          - option "DELETE"
+          - option "PATCH"
+          - option "HEAD"
+          - option "OPTIONS"
+      - generic [ref=e27]:
+        - generic [ref=e28]: "Status:"
+        - combobox "Status:" [ref=e29]:
+          - option "All" [selected]
+          - option "2xx"
+          - option "3xx"
+          - option "4xx"
+          - option "5xx"
+      - generic [ref=e30]:
+        - generic [ref=e31]: "Domain:"
+        - textbox "Domain:" [ref=e32]:
+          - /placeholder: Filter by domain...
+      - generic [ref=e33]:
+        - generic [ref=e34]: "Search:"
+        - generic [ref=e35]:
+          - img
+          - textbox "Search:" [ref=e36]:
+            - /placeholder: Search URL, method, body... (Ctrl+L)
+      - button "Export" [ref=e38] [cursor=pointer]:
+        - img [ref=e39]
+        - text: Export
+    - table [ref=e42]:
+      - rowgroup [ref=e43]:
+        - row "Time Method URL Status Domain" [ref=e44]:
+          - columnheader "Time" [ref=e45] [cursor=pointer]
+          - columnheader "Method" [ref=e46] [cursor=pointer]
+          - columnheader "URL" [ref=e47] [cursor=pointer]
+          - columnheader "Status" [ref=e48] [cursor=pointer]
+          - columnheader "Domain" [ref=e49]
+      - rowgroup [ref=e50]:
+        - row "GET /get?test=fresh-after-fix 200 OK 00:08:48.429" [ref=e51] [cursor=pointer]:
+          - cell "GET" [ref=e52]:
+            - generic [ref=e53]: GET
+          - cell "/get?test=fresh-after-fix" [ref=e54]
+          - cell "200 OK" [ref=e55]:
+            - generic [ref=e56]: 200 OK
+          - cell "00:08:48.429" [ref=e57]
+          - cell [ref=e58]
+        - row "GET /get?test=response-json-test 200 OK 00:07:28.273" [ref=e59] [cursor=pointer]:
+          - cell "GET" [ref=e60]:
+            - generic [ref=e61]: GET
+          - cell "/get?test=response-json-test" [ref=e62]
+          - cell "200 OK" [ref=e63]:
+            - generic [ref=e64]: 200 OK
+          - cell "00:07:28.273" [ref=e65]
+          - cell [ref=e66]
+  - generic [ref=e68]:
+    - generic [ref=e69]:
+      - heading "GET /get?test=fresh-after-fix" [level=2] [ref=e70]:
+        - generic [ref=e71]: GET
+        - generic "/get?test=fresh-after-fix" [ref=e72]
+      - button "Close (Escape)" [ref=e73] [cursor=pointer]:
+        - img [ref=e74]
+    - generic [ref=e77]:
+      - button "Request" [ref=e78] [cursor=pointer]
+      - button "Response" [ref=e79] [cursor=pointer]
+      - button "Headers" [ref=e80] [cursor=pointer]
+      - button "Timing" [ref=e81] [cursor=pointer]
+    - generic [ref=e83]:
+      - generic [ref=e84]:
+        - heading "Request Body" [level=3] [ref=e85]
+        - generic [ref=e86]: (empty)
+      - generic [ref=e87]:
+        - generic [ref=e88]:
+          - generic [ref=e89]: "Size:"
+          - generic [ref=e90]: 0 B
+        - generic [ref=e91]:
+          - generic [ref=e92]: "Content-Type:"
+          - generic [ref=e93]: —
+        - generic [ref=e94]:
+          - generic [ref=e95]: "Protocol:"
+          - generic [ref=e96]: http

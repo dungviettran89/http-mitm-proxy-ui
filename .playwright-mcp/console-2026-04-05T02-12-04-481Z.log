@@ -1,0 +1,3 @@
+[    6587ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:14096/api/health:0
+[    6589ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:14096/api/config:0
+[    6590ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:14096/api/requests?limit=1000:0

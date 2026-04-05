@@ -1,0 +1,113 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - heading "MITM Proxy UI" [level=1] [ref=e6]:
+      - img [ref=e7]
+      - text: MITM Proxy UI
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - text: "Proxy:"
+        - strong [ref=e12]: running
+        - text: · Port 19090
+      - generic [ref=e13]:
+        - text: "Requests:"
+        - strong [ref=e14]: "3"
+    - generic [ref=e15]:
+      - button "CA Cert" [ref=e16] [cursor=pointer]:
+        - img [ref=e17]
+        - text: CA Cert
+      - button "Clear" [ref=e19] [cursor=pointer]:
+        - img [ref=e20]
+        - text: Clear
+  - generic [ref=e22]:
+    - generic [ref=e23]:
+      - generic [ref=e24]:
+        - generic [ref=e25]: "Method:"
+        - combobox "Method:" [ref=e26]:
+          - option "All" [selected]
+          - option "GET"
+          - option "POST"
+          - option "PUT"
+          - option "DELETE"
+          - option "PATCH"
+          - option "HEAD"
+          - option "OPTIONS"
+      - generic [ref=e27]:
+        - generic [ref=e28]: "Status:"
+        - combobox "Status:" [ref=e29]:
+          - option "All" [selected]
+          - option "2xx"
+          - option "3xx"
+          - option "4xx"
+          - option "5xx"
+      - generic [ref=e30]:
+        - generic [ref=e31]: "Domain:"
+        - textbox "Domain:" [ref=e32]:
+          - /placeholder: Filter by domain...
+      - generic [ref=e33]:
+        - generic [ref=e34]: "Search:"
+        - generic [ref=e35]:
+          - img
+          - textbox "Search:" [ref=e36]:
+            - /placeholder: Search URL, method, body... (Ctrl+L)
+      - button "Export" [ref=e38] [cursor=pointer]:
+        - img [ref=e39]
+        - text: Export
+    - table [ref=e42]:
+      - rowgroup [ref=e43]:
+        - row "Time Method URL Status Domain" [ref=e44]:
+          - columnheader "Time" [ref=e45] [cursor=pointer]
+          - columnheader "Method" [ref=e46] [cursor=pointer]
+          - columnheader "URL" [ref=e47] [cursor=pointer]
+          - columnheader "Status" [ref=e48] [cursor=pointer]
+          - columnheader "Domain" [ref=e49]
+      - rowgroup [ref=e50]:
+        - row "GET /headers 200 OK 23:57:29.249" [ref=e101] [cursor=pointer]:
+          - cell "GET" [ref=e102]:
+            - generic [ref=e103]: GET
+          - cell "/headers" [ref=e104]
+          - cell "200 OK" [ref=e105]:
+            - generic [ref=e106]: 200 OK
+          - cell "23:57:29.249" [ref=e107]
+          - cell [ref=e108]
+        - row "POST /post 200 OK 23:57:24.409" [ref=e109] [cursor=pointer]:
+          - cell "POST" [ref=e110]:
+            - generic [ref=e111]: POST
+          - cell "/post" [ref=e112]
+          - cell "200 OK" [ref=e113]:
+            - generic [ref=e114]: 200 OK
+          - cell "23:57:24.409" [ref=e115]
+          - cell [ref=e116]
+        - row "GET /get?test=display-get 200 OK 23:57:20.075" [ref=e92] [cursor=pointer]:
+          - cell "GET" [ref=e93]:
+            - generic [ref=e94]: GET
+          - cell "/get?test=display-get" [ref=e95]
+          - cell "200 OK" [ref=e96]:
+            - generic [ref=e97]: 200 OK
+          - cell "23:57:20.075" [ref=e98]
+          - cell [ref=e99]
+  - generic [ref=e118]:
+    - generic [ref=e119]:
+      - heading "POST /post" [level=2] [ref=e120]:
+        - generic [ref=e121]: POST
+        - generic "/post" [ref=e122]
+      - button "Close (Escape)" [ref=e123] [cursor=pointer]:
+        - img [ref=e124]
+    - generic [ref=e127]:
+      - button "Request" [ref=e128] [cursor=pointer]
+      - button "Response" [ref=e129] [cursor=pointer]
+      - button "Headers" [ref=e130] [cursor=pointer]
+      - button "Timing" [ref=e131] [cursor=pointer]
+    - generic [ref=e133]:
+      - generic [ref=e134]:
+        - heading "Request Body" [level=3] [ref=e135]
+        - generic [ref=e136]: "[object Object]"
+      - generic [ref=e137]:
+        - generic [ref=e138]:
+          - generic [ref=e139]: "Size:"
+          - generic [ref=e140]: NaN MB
+        - generic [ref=e141]:
+          - generic [ref=e142]: "Content-Type:"
+          - generic [ref=e143]: application/json
+        - generic [ref=e144]:
+          - generic [ref=e145]: "Protocol:"
+          - generic [ref=e146]: http
