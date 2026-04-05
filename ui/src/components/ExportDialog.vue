@@ -58,9 +58,19 @@ function exportAsCSV(data: unknown[]): string {
   }>
 
   const headers = [
-    'ID', 'Method', 'URL', 'Protocol', 'Status', 'Status Message',
-    'Request Content-Type', 'Response Content-Type', 'Request Size',
-    'Response Size', 'Timestamp', 'Request Body', 'Response Body'
+    'ID',
+    'Method',
+    'URL',
+    'Protocol',
+    'Status',
+    'Status Message',
+    'Request Content-Type',
+    'Response Content-Type',
+    'Request Size',
+    'Response Size',
+    'Timestamp',
+    'Request Body',
+    'Response Body',
   ]
 
   const rows = records.map((r) => [
@@ -138,9 +148,16 @@ async function handleExport(): Promise<void> {
       <div class="modal-header">
         <h3 id="export-title">Export Traffic</h3>
         <button class="btn-close" @click="$emit('close')">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"/>
-            <line x1="6" y1="6" x2="18" y2="18"/>
+          <svg
+            viewBox="0 0 24 24"
+            width="18"
+            height="18"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
         </button>
       </div>
@@ -173,8 +190,15 @@ async function handleExport(): Promise<void> {
       <div class="modal-footer">
         <button class="btn btn-outline" @click="$emit('close')">Cancel</button>
         <button class="btn btn-primary" @click="handleExport" :disabled="exporting">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+          <svg
+            viewBox="0 0 24 24"
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
           </svg>
           Export
         </button>

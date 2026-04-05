@@ -165,6 +165,166 @@ npm test
 3. Test authentication bypass by modifying headers
 4. Export suspicious traffic as HAR for team analysis
 
+## Configuring Existing Applications to Use the Proxy
+
+The primary purpose of this tool is to **intercept and inspect traffic from existing applications without modifying their code**. You do this by setting proxy environment variables or command-line flags.
+
+### Step 1: Install the CA Certificate (for HTTPS)
+
+Before intercepting HTTPS traffic, you must trust the proxy's CA certificate:
+
+```bash
+# Start the proxy once to generate the CA
+http-mitm-proxy-ui
+
+# Download the CA certificate
+curl http://localhost:3000/api/ca-cert -o http-mitm-proxy-ca.pem
+
+# On macOS, add to Keychain and trust it:
+security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain http-mitm-proxy-ca.pem
+
+# On Linux (Debian/Ubuntu):
+sudo cp http-mitm-proxy-ca.pem /usr/local/share/ca-certificates/
+sudo update-ca-certificates
+```
+
+### Step 2: Configure Your Application
+
+#### Node.js Applications
+
+Node.js respects standard proxy environment variables. Start your app with:
+
+```bash
+# For HTTP and HTTPS traffic
+HTTP_PROXY=http://localhost:8080 HTTPS_PROXY=http://localhost:8080 node your-app.js
+
+# Or if using npm scripts
+HTTP_PROXY=http://localhost:8080 HTTPS_PROXY=http://localhost:8080 npm start
+
+# For apps that use the `proxy` env var (some libraries)
+proxy=http://localhost:8080 node your-app.js
+```
+
+**Note**: Some HTTP clients in Node.js (like `axios`, `node-fetch`) don't automatically respect env vars. For those, you may need to pass an `agent` with proxy support, or use `global-agent`:
+
+```bash
+# Force all Node.js HTTP clients through the proxy
+npx global-agent bootstrap -- node your-app.js
+```
+
+#### curl / wget
+
+```bash
+# curl with proxy
+curl --proxy http://localhost:8080 https://api.example.com/data
+
+# curl with explicit HTTPS proxy (for HTTPS targets)
+curl --proxy http://localhost:8080 --proxy-insecure https://api.example.com/data
+
+# wget with proxy
+export http_proxy=http://localhost:8080
+export https_proxy=http://localhost:8080
+wget https://api.example.com/data
+```
+
+#### Java Applications
+
+Java uses system properties for proxy configuration. Pass them via `-D` flags:
+
+```bash
+# Basic HTTP proxy
+java -Dhttp.proxyHost=localhost -Dhttp.proxyPort=8080 \
+     -Dhttps.proxyHost=localhost -Dhttps.proxyPort=8080 \
+     -jar your-app.jar
+
+# For Spring Boot apps
+java -Dhttp.proxyHost=localhost -Dhttp.proxyPort=8080 \
+     -Dhttps.proxyHost=localhost -Dhttps.proxyPort=8080 \
+     -Dhttp.nonProxyHosts="localhost|127.0.0.1" \
+     -jar your-app.jar
+
+# For Maven-based apps
+mvn -Dhttp.proxyHost=localhost -Dhttp.proxyPort=8080 \
+    -Dhttps.proxyHost=localhost -Dhttps.proxyPort=8080 \
+    spring-boot:run
+
+# For Gradle-based apps
+gradle -Dorg.gradle.jvmargs="-Dhttp.proxyHost=localhost -Dhttp.proxyPort=8080 -Dhttps.proxyHost=localhost -Dhttps.proxyPort=8080" bootRun
+```
+
+**Note**: Java's default HTTP client may not intercept all traffic (e.g., OkHttp, Apache HttpClient may need separate proxy config). See [Java-specific notes below](#java-specific-http-clients).
+
+#### Python Applications
+
+```bash
+# Standard library (urllib, requests with env var support)
+HTTP_PROXY=http://localhost:8080 HTTPS_PROXY=http://localhost:8080 python your-app.py
+
+# For pip itself (debugging package installs)
+HTTP_PROXY=http://localhost:8080 HTTPS_PROXY=http://localhost:8080 pip install requests
+```
+
+#### Docker Containers
+
+```bash
+# Pass proxy env vars to container
+docker run -e HTTP_PROXY=http://host.docker.internal:8080 \
+           -e HTTPS_PROXY=http://host.docker.internal:8080 \
+           your-image
+
+# Or in docker-compose.yml:
+# services:
+#   app:
+#     environment:
+#       - HTTP_PROXY=http://host.docker.internal:8080
+#       - HTTPS_PROXY=http://host.docker.internal:8080
+```
+
+**Note**: On macOS/Windows, use `host.docker.internal` instead of `localhost` to reach the host machine from inside a container.
+
+#### React / Angular / Vue Dev Servers
+
+```bash
+# React (Create React App)
+HTTP_PROXY=http://localhost:8080 npm start
+
+# Angular
+HTTP_PROXY=http://localhost:8080 ng serve
+
+# Vite
+HTTP_PROXY=http://localhost:8080 npm run dev
+```
+
+### Java-Specific HTTP Clients
+
+Some Java HTTP libraries don't respect the `-D` system properties above. Configure them individually:
+
+**OkHttp:**
+```java
+Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("localhost", 8080));
+OkHttpClient client = new OkHttpClient.Builder()
+    .proxy(proxy)
+    .build();
+```
+
+**Apache HttpClient:**
+```java
+HttpHost proxy = new HttpHost("localhost", 8080, "http");
+RequestConfig config = RequestConfig.custom()
+    .setProxy(proxy)
+    .build();
+CloseableHttpClient client = HttpClients.custom()
+    .setDefaultRequestConfig(config)
+    .build();
+```
+
+**Java 11+ HttpClient:**
+```java
+HttpClient client = HttpClient.newBuilder()
+    .proxy(ProxySelector.of(new InetSocketAddress("localhost", 8080)))
+    .build();
+```
+
 ## License
 
 ISC

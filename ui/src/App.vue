@@ -50,10 +50,7 @@ onUnmounted(() => {
 
 <template>
   <div class="app-container">
-    <ProxyHeader
-      :request-count="total"
-      @clear-history="handleClearHistory"
-    />
+    <ProxyHeader :request-count="total" @clear-history="handleClearHistory" />
 
     <div class="main-content">
       <FilterBar />

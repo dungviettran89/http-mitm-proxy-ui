@@ -10,6 +10,7 @@ UI_PORT=14096
 TEST_DIR="$(pwd)"
 PID_FILE="/tmp/http-mitm-proxy-integration-test.pid"
 LOG_FILE="/tmp/http-mitm-proxy-integration-test.log"
+TGZ_FILE=""
 
 # Cleanup function
 cleanup() {
@@ -36,15 +37,19 @@ cleanup() {
   fi
   # Clean up test CA directory
   rm -rf "./test-ca" 2>/dev/null || true
+  # Clean up tgz file
+  if [[ -n "$TGZ_FILE" && -f "$TGZ_FILE" ]]; then
+    rm -f "$TGZ_FILE"
+  fi
   echo "🧹 Cleanup complete"
 }
 
 # Trap EXIT signal for cleanup
 trap cleanup EXIT
 
-# Step 1: Build the package
+# Step 1: Build and pack the package
 echo ""
-echo "🔨 Step 1: Building package..."
+echo "🔨 Step 1: Building and packing package..."
 if npm run build > "$LOG_FILE" 2>&1; then
   echo "✅ Build successful"
 else
@@ -53,14 +58,21 @@ else
   exit 1
 fi
 
-# Step 2: Start the proxy server in background
+TGZ_FILE=$(npm pack 2>&1 | tail -1)
+if [[ ! -f "$TGZ_FILE" ]]; then
+  echo "❌ npm pack failed! Check log: $LOG_FILE"
+  exit 1
+fi
+echo "✅ Package packed: $TGZ_FILE"
+
+# Step 2: Start the proxy server in background using npx with the tgz
 echo ""
-echo "🚀 Step 2: Starting proxy server..."
+echo "🚀 Step 2: Starting proxy server via npx packed package..."
 echo "   Proxy port: $PROXY_PORT"
 echo "   UI port: $UI_PORT"
 
-# Start server with test configuration
-node dist/index.js \
+# Start server with test configuration using npx -y to skip prompts
+npx -y "./$TGZ_FILE" \
   --proxy-port "$PROXY_PORT" \
   --ui-port "$UI_PORT" \
   --ssl-ca-dir "./test-ca" \

@@ -7,7 +7,12 @@ const requests = ref<RequestRecord[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 const total = ref(0)
-const config = ref<{ maxRequests: number; proxyPort: number; uiPort: number; enableModification: boolean } | null>(null)
+const config = ref<{
+  maxRequests: number
+  proxyPort: number
+  uiPort: number
+  enableModification: boolean
+} | null>(null)
 
 const sort = ref<SortState>({ field: 'timestamp', direction: 'desc' })
 const filters = ref<FilterState>({
@@ -25,7 +30,10 @@ const filteredAndSorted = computed(() => {
 
   // Apply filters
   if (filters.value.method) {
-    const methods = filters.value.method.toUpperCase().split(',').map((m) => m.trim())
+    const methods = filters.value.method
+      .toUpperCase()
+      .split(',')
+      .map((m) => m.trim())
     result = result.filter((r) => methods.includes(r.method.toUpperCase()))
   }
   if (filters.value.status) {
@@ -60,8 +68,12 @@ const filteredAndSorted = computed(() => {
     result = result.filter((r) => {
       const urlMatch = r.url.toLowerCase().includes(searchLower)
       const methodMatch = r.method.toLowerCase().includes(searchLower)
-      const bodyMatch = typeof r.body === 'string' ? r.body.toLowerCase().includes(searchLower) : false
-      const responseBodyMatch = typeof r.response?.body === 'string' ? r.response.body.toLowerCase().includes(searchLower) : false
+      const bodyMatch =
+        typeof r.body === 'string' ? r.body.toLowerCase().includes(searchLower) : false
+      const responseBodyMatch =
+        typeof r.response?.body === 'string'
+          ? r.response.body.toLowerCase().includes(searchLower)
+          : false
       return urlMatch || methodMatch || bodyMatch || responseBodyMatch
     })
   }
@@ -152,7 +164,13 @@ function clearFilters(): void {
 }
 
 function hasActiveFilters(): boolean {
-  return !!(filters.value.method || filters.value.status || filters.value.domain || filters.value.contentType || filters.value.search)
+  return !!(
+    filters.value.method ||
+    filters.value.status ||
+    filters.value.domain ||
+    filters.value.contentType ||
+    filters.value.search
+  )
 }
 
 function setupWebSocket(): void {
@@ -167,7 +185,7 @@ function setupWebSocket(): void {
         const req = msg.data as RequestRecord
         const idx = requests.value.findIndex((r) => r.id === req.id)
         if (idx >= 0) {
-          requests.value[idx] = req
+          requests.value.splice(idx, 1, req) // Use splice for Vue reactivity
         } else {
           requests.value.push(req)
         }

@@ -28,7 +28,13 @@ function getStatusText(req: RequestRecord): string {
 
 function formatTimestamp(ts: number): string {
   const d = new Date(ts)
-  return d.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit', fractionalSecondDigits: 3 } as Intl.DateTimeFormatOptions)
+  return d.toLocaleTimeString([], {
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    fractionalSecondDigits: 3,
+  } as Intl.DateTimeFormatOptions)
 }
 
 function formatUrl(url: string): string {
@@ -82,7 +88,10 @@ const sortFields: { key: SortField; label: string }[] = [
         <tr
           v-for="req in requests"
           :key="req.id"
-          :class="['request-row', { selected: selectedId === req.id, 'row-pending': !req.response }]"
+          :class="[
+            'request-row',
+            { selected: selectedId === req.id, 'row-pending': !req.response },
+          ]"
           @click="$emit('row-click', req.id)"
         >
           <td>

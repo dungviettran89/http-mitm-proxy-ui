@@ -48,7 +48,8 @@
   --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.15);
 
   /* Typography */
-  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', Consolas, monospace;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.8125rem;
@@ -182,8 +183,13 @@ body {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .request-counter {
@@ -353,7 +359,7 @@ body {
 }
 
 .filter-group select,
-.filter-group input[type="text"] {
+.filter-group input[type='text'] {
   padding: 5px 10px;
   border: 1px solid var(--color-gray-lighter);
   border-radius: var(--border-radius);
@@ -365,7 +371,7 @@ body {
 }
 
 .filter-group select:focus,
-.filter-group input[type="text"]:focus {
+.filter-group input[type='text']:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 2px var(--color-primary-bg);
@@ -485,12 +491,24 @@ body {
   color: var(--color-white);
 }
 
-.method-get { background: var(--method-get); }
-.method-post { background: var(--method-post); }
-.method-put { background: var(--method-put); }
-.method-delete { background: var(--method-delete); }
-.method-patch { background: var(--method-patch); }
-.method-other { background: var(--method-other); }
+.method-get {
+  background: var(--method-get);
+}
+.method-post {
+  background: var(--method-post);
+}
+.method-put {
+  background: var(--method-put);
+}
+.method-delete {
+  background: var(--method-delete);
+}
+.method-patch {
+  background: var(--method-patch);
+}
+.method-other {
+  background: var(--method-other);
+}
 
 .url-cell {
   max-width: 400px;
@@ -526,7 +544,8 @@ body {
   font-family: var(--font-mono);
 }
 
-.status-2xx, .status-pending {
+.status-2xx,
+.status-pending {
   background: var(--color-success-bg);
   color: var(--color-success);
 }
@@ -541,7 +560,8 @@ body {
   color: var(--color-warning);
 }
 
-.status-5xx, .status-other {
+.status-5xx,
+.status-other {
   background: var(--color-error-bg);
   color: var(--color-error);
 }
@@ -653,7 +673,9 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ============================================
@@ -1002,7 +1024,7 @@ body {
   }
 
   .filter-group select,
-  .filter-group input[type="text"] {
+  .filter-group input[type='text'] {
     min-width: 0;
     width: 100%;
   }

@@ -7,17 +7,25 @@ defineProps<{
 
 <template>
   <div class="empty-state">
-    <svg class="empty-icon" viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5">
-      <circle cx="12" cy="12" r="10"/>
-      <path d="M8 12h8M12 8v8"/>
+    <svg
+      class="empty-icon"
+      viewBox="0 0 24 24"
+      width="64"
+      height="64"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="M8 12h8M12 8v8" />
     </svg>
 
     <template v-if="!hasRequests">
       <h3>No requests captured yet</h3>
       <p>
         Configure your application to use the proxy at
-        <code>localhost:8080</code> and start making HTTP requests.
-        They will appear here in real-time.
+        <code>localhost:8080</code> and start making HTTP requests. They will appear here in
+        real-time.
       </p>
       <div class="empty-steps">
         <div class="step">
