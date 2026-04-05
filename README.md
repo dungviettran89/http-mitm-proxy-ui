@@ -1,6 +1,6 @@
 # http-mitm-proxy-ui
 
-A self-contained Node.js package that bundles `http-mitm-proxy` with a modern web-based UI for inspecting, debugging, and manipulating HTTP/HTTPS traffic in real-time.
+A self-contained Node.js package that bundles `http-mitm-proxy` with a modern web-based UI for inspecting HTTP/HTTPS traffic in real time.
 
 ![http-mitm-proxy-ui screenshot](docs/screenshot.png)
 
@@ -9,8 +9,7 @@ A self-contained Node.js package that bundles `http-mitm-proxy` with a modern we
 - **Real-time Traffic Inspection**: Live stream of HTTP/HTTPS requests and responses with WebSocket updates
 - **Complete Request/Response Details**: Headers, bodies, cookies, query parameters with syntax highlighting
 - **Advanced Filtering & Search**: Filter by domain, method, status code, content type with full-text search
-- **Traffic Modification**: Breakpoints, edit/replay, and rule-based auto-modification capabilities
-- **Export & Replay**: Export traffic as HAR, JSON, or CSV; replay individual requests
+- **Export Data**: Export traffic as JSON or CSV for offline analysis and sharing
 - **HTTPS Interception**: Auto-generates and manages SSL certificates with easy CA download
 - **Standalone CLI**: Single command to start both proxy and UI with configurable options
 - **REST API**: Programmatic access to traffic data and configuration
@@ -50,7 +49,6 @@ Available options:
 - `-c, --config <path>`: Path to JSON config file
 - `--ssl-ca-dir <path>`: Directory for SSL CA certificates
 - `--max-requests <count>`: Max requests to keep in memory (default: 1000)
-- `--no-modification`: Disable request/response modification features
 - `-h, --help`: Display help
 
 ### Programmatic Usage
@@ -61,7 +59,6 @@ import { createProxyUI } from 'http-mitm-proxy-ui';
 const proxy = createProxyUI({
   proxyPort: 8080,
   uiPort: 3000,
-  enableModification: true,
 });
 
 proxy.on('request', (req) => {
@@ -86,9 +83,9 @@ await proxy.start();
 │   proxy core)    │                          │
 │  - Intercept     │  - WebSocket for         │
 │    HTTP/HTTPS    │    real-time updates     │
-│  - Modify on     │  - REST API for          │
-│    the fly       │    history/query         │
-│  - Emit events   │  - Static file serving   │
+│  - Capture &     │  - REST API for          │
+│    emit events   │    history/query         │
+│                  │  - Static file serving   │
 └────────┬─────────┴────────────┬─────────────┘
          │                      │
          ▼                      ▼
@@ -113,7 +110,7 @@ When the UI server is running (not headless):
 Connect to `ws://localhost:3000/ws` for real-time updates:
 
 - `{ type: 'init', data: [...] }` - Initial state on connection
-- `{ type: 'request', data: RequestRecord }` - New request intercepted
+- `{ type: 'request', data: RequestRecord }` - New request captured
 - `{ type: 'response', data: RequestRecord }` - Response received
 - `{ type: 'error', data: { message: string } }` - Error occurred
 - `{ type: 'clear', data: {} }` - History cleared
@@ -128,7 +125,6 @@ Create a `proxy-config.json` file:
   "uiPort": 3000,
   "sslCaDir": "./certs",
   "maxRequests": 1000,
-  "enableModification": true,
   "headless": false
 }
 ```
@@ -158,19 +154,18 @@ npm test
 2. Configure your application to use `localhost:8080` as HTTP/HTTPS proxy
 3. Visit `http://localhost:3000` to see live traffic
 4. Use filtering to isolate specific endpoints
-5. Modify requests/responses to test edge cases
+5. Inspect full request/response details including headers, bodies, and timing
 
 ### Mobile App Testing
 1. Start the proxy on your development machine
 2. Configure your mobile device to use your machine's IP:8080 as proxy
 3. Install the CA certificate on your device (download from `http://YOUR_IP:3000/api/ca-cert`)
-4. Test mobile app network calls with full visibility
+4. Inspect mobile app network calls with full visibility
 
 ### Security Testing
-1. Intercept and modify requests in real-time
-2. Test injection attacks by modifying request bodies
-3. Test authentication bypass by modifying headers
-4. Export suspicious traffic as HAR for team analysis
+1. Capture and inspect all traffic for unexpected requests or data leaks
+2. Verify authorization headers and sensitive data in transit
+3. Export captured traffic as JSON or CSV for team analysis
 
 ## Configuring Existing Applications to Use the Proxy
 
@@ -336,6 +331,8 @@ HttpClient client = HttpClient.newBuilder()
 
 ISC
 
-## Author
+## Author & Credits
 
-Dung Tran (dungviettran89)
+- **Dung Tran** ([dungviettran89](https://github.com/dungviettran89))
+- Built with [OpenClaw](https://github.com/dungviettran89/openclaw) — an AI agent framework for autonomous development
+- Code written with assistance from [Qwen Coder](https://qwenlm.github.io/) — an AI coding assistant
