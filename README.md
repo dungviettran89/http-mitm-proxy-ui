@@ -2,6 +2,8 @@
 
 A self-contained Node.js package that bundles `http-mitm-proxy` with a modern web-based UI for inspecting, debugging, and manipulating HTTP/HTTPS traffic in real-time.
 
+![http-mitm-proxy-ui screenshot](docs/screenshot.png)
+
 ## Features
 
 - **Real-time Traffic Inspection**: Live stream of HTTP/HTTPS requests and responses with WebSocket updates
@@ -13,6 +15,8 @@ A self-contained Node.js package that bundles `http-mitm-proxy` with a modern we
 - **Standalone CLI**: Single command to start both proxy and UI with configurable options
 - **REST API**: Programmatic access to traffic data and configuration
 - **Material Design UI**: Clean, responsive interface with red/black on white theme
+
+📖 **[User Guide](guides/USER-GUIDE.md)** — Complete documentation with screenshots
 
 ## Installation
 
