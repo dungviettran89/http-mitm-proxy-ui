@@ -48,8 +48,29 @@ Available options:
 - `-H, --headless`: Run in proxy-only mode (no UI)
 - `-c, --config <path>`: Path to JSON config file
 - `--ssl-ca-dir <path>`: Directory for SSL CA certificates
+- `--ca-cert <path>`: Path to custom CA certificate file (.pem)
+- `--ca-key <path>`: Path to custom CA private key file (.pem)
 - `--max-requests <count>`: Max requests to keep in memory (default: 1000)
 - `-h, --help`: Display help
+
+### Using Custom CA Certificates
+
+If you already have a CA certificate and key (e.g., from a corporate PKI or a previous proxy setup), you can use them instead of auto-generating:
+
+```bash
+http-mitm-proxy-ui --ca-cert /path/to/ca.pem --ca-key /path/to/ca.key
+```
+
+Both `--ca-cert` and `--ca-key` must be provided together. The files are copied into the `--ssl-ca-dir` (default: `~/.http-mitm-proxy-ui/ca`) in the format expected by the proxy. When omitted, a new CA is auto-generated on first run.
+
+You can also set these in a JSON config file:
+
+```json
+{
+  "caCertPath": "/path/to/ca.pem",
+  "caKeyPath": "/path/to/ca.key"
+}
+```
 
 ### Programmatic Usage
 

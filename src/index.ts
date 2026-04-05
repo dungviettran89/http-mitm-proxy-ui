@@ -3,8 +3,13 @@
 import { Command } from 'commander'
 import * as path from 'path'
 import * as os from 'os'
+import * as fs from 'fs'
 import { MitmProxy, type ProxyUIConfig } from './proxy'
 import { UIServer } from './ui/server'
+
+// node-forge has no @types, but it's already a dependency and we only use it for public key extraction
+// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-explicit-any
+const nodeForge: any = require('node-forge')
 
 const DEFAULT_PROXY_PORT = 8080
 const DEFAULT_UI_PORT = 3000
@@ -19,6 +24,8 @@ interface CliOptions {
   maxRequests: number
   enableModification: boolean
   config?: string
+  caCertPath?: string
+  caKeyPath?: string
 }
 
 async function loadConfigFile(configPath?: string): Promise<Partial<CliOptions>> {
@@ -31,6 +38,38 @@ async function loadConfigFile(configPath?: string): Promise<Partial<CliOptions>>
     console.error(`Warning: Could not load config file "${configPath}": ${err.message}`)
     return {}
   }
+}
+
+/**
+ * If custom CA cert/key are provided, copy them to the expected locations
+ * in sslCaDir so http-mitm-proxy's CA class loads them instead of generating.
+ * The CA class expects three files: certs/ca.pem, keys/ca.private.key, keys/ca.public.key
+ */
+async function setupCaFiles(caCertPath: string, caKeyPath: string, sslCaDir: string): Promise<void> {
+  const certsDir = path.join(sslCaDir, 'certs')
+  const keysDir = path.join(sslCaDir, 'keys')
+
+  // Ensure directories exist
+  fs.mkdirSync(certsDir, { recursive: true })
+  fs.mkdirSync(keysDir, { recursive: true })
+
+  // Copy cert and private key to expected locations
+  const destCert = path.join(certsDir, 'ca.pem')
+  const destPrivateKey = path.join(keysDir, 'ca.private.key')
+  const destPublicKey = path.join(keysDir, 'ca.public.key')
+
+  fs.copyFileSync(caCertPath, destCert)
+  fs.copyFileSync(caKeyPath, destPrivateKey)
+
+  // Extract public key from the private key using node-forge (already a dependency)
+  const pki = nodeForge.pki
+  const privateKey = pki.privateKeyFromPem(fs.readFileSync(caKeyPath, 'utf-8'))
+  const publicKey = pki.setRsaPublicKey(privateKey.n, privateKey.e)
+  fs.writeFileSync(destPublicKey, pki.publicKeyToPem(publicKey))
+
+  console.log(`  CA cert: ${caCertPath} → ${destCert}`)
+  console.log(`  CA key:  ${caKeyPath} → ${destPrivateKey}`)
+  console.log(`  CA pub:  (derived) → ${destPublicKey}`)
 }
 
 async function main(): Promise<void> {
@@ -51,6 +90,8 @@ async function main(): Promise<void> {
       String(DEFAULT_MAX_REQUESTS)
     )
     .option('--no-modification', 'Disable request/response modification features')
+    .option('--ca-cert <path>', 'Path to custom CA certificate file (.pem)')
+    .option('--ca-key <path>', 'Path to custom CA private key file (.pem)')
     .parse(process.argv)
 
   const opts = program.opts()
@@ -75,6 +116,24 @@ async function main(): Promise<void> {
       fileConfig.enableModification != null
         ? Boolean(fileConfig.enableModification)
         : opts.enableModification !== false,
+    caCertPath: fileConfig.caCertPath || opts.caCert,
+    caKeyPath: fileConfig.caKeyPath || opts.caKey,
+  }
+
+  // Validate CA cert/key: both or neither must be provided
+  if ((config.caCertPath && !config.caKeyPath) || (!config.caCertPath && config.caKeyPath)) {
+    console.error('Error: --ca-cert and --ca-key must be provided together.')
+    process.exit(1)
+  }
+
+  // Validate CA cert/key files exist
+  if (config.caCertPath && !fs.existsSync(config.caCertPath)) {
+    console.error(`Error: CA certificate file not found: ${config.caCertPath}`)
+    process.exit(1)
+  }
+  if (config.caKeyPath && !fs.existsSync(config.caKeyPath)) {
+    console.error(`Error: CA private key file not found: ${config.caKeyPath}`)
+    process.exit(1)
   }
 
   // Validate ports
@@ -98,6 +157,8 @@ async function main(): Promise<void> {
     maxRequests: config.maxRequests,
     enableModification: config.enableModification,
     headless: config.headless,
+    caCertPath: config.caCertPath,
+    caKeyPath: config.caKeyPath,
   }
 
   console.log('Starting http-mitm-proxy-ui...')
@@ -106,6 +167,12 @@ async function main(): Promise<void> {
     console.log(`  UI:    http://localhost:${config.uiPort}`)
   }
   console.log(`  Headless: ${config.headless}`)
+  if (config.caCertPath && config.caKeyPath) {
+    console.log(`  Custom CA: yes`)
+    await setupCaFiles(config.caCertPath, config.caKeyPath, config.sslCaDir!)
+  } else {
+    console.log(`  Custom CA: no (auto-generate)`)
+  }
   console.log('')
 
   // Start the proxy

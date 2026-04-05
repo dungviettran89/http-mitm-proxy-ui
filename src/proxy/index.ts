@@ -32,6 +32,8 @@ export interface ProxyUIConfig {
   enableModification: boolean
   headless?: boolean
   dbPath?: string
+  caCertPath?: string
+  caKeyPath?: string
 }
 
 export interface ProxyEvents {

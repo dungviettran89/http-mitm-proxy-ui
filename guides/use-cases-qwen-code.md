@@ -44,6 +44,14 @@ Customize if needed:
 npx http-mitm-proxy-ui --proxy-port 9090 --ui-port 4000
 ```
 
+**Using a custom CA certificate** (e.g., from a corporate PKI):
+
+```bash
+npx http-mitm-proxy-ui --ca-cert /path/to/ca.pem --ca-key /path/to/ca.key
+```
+
+Both `--ca-cert` and `--ca-key` must be provided together. When omitted, a new CA is auto-generated on first run.
+
 **Verify the proxy is running:**
 
 ```bash
