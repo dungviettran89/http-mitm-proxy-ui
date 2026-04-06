@@ -45,7 +45,11 @@ async function loadConfigFile(configPath?: string): Promise<Partial<CliOptions>>
  * in sslCaDir so http-mitm-proxy's CA class loads them instead of generating.
  * The CA class expects three files: certs/ca.pem, keys/ca.private.key, keys/ca.public.key
  */
-async function setupCaFiles(caCertPath: string, caKeyPath: string, sslCaDir: string): Promise<void> {
+async function setupCaFiles(
+  caCertPath: string,
+  caKeyPath: string,
+  sslCaDir: string
+): Promise<void> {
   const certsDir = path.join(sslCaDir, 'certs')
   const keysDir = path.join(sslCaDir, 'keys')
 

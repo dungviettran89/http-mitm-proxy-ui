@@ -68,8 +68,8 @@ if [[ -f "$PROXY_JS" ]] && grep -q 'host: "127.0.0.1"' "$PROXY_JS"; then
 else
   echo "⚠️  http-mitm-proxy not patched, applying patch..."
   if [[ -f "$PROXY_JS" ]]; then
-    sed -i '' 's/host: "0\.0\.0\.0"/host: "127.0.0.1"/g' "$PROXY_JS"
-    sed -i '' 's/options\.host || "localhost"/options.host || "127.0.0.1"/g' "$PROXY_JS"
+    sed -i 's/host: "0\.0\.0\.0"/host: "127.0.0.1"/g' "$PROXY_JS"
+    sed -i 's/options\.host || "localhost"/options.host || "127.0.0.1"/g' "$PROXY_JS"
     echo "✅ http-mitm-proxy patched successfully"
   else
     echo "❌ Could not find http-mitm-proxy proxy.js to patch"

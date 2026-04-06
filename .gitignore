@@ -46,3 +46,6 @@ src/**/*.js.map
 ui/dist/
 *.tmp
 docs/test-ca/
+*.tmp
+test-results/
+.qwen/
