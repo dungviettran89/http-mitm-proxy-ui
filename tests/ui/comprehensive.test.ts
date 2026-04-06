@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const PROXY_URL = 'http://localhost:19090';
+const PROXY_URL = 'http://127.0.0.1:19090';
 
 test.describe('HTTP MITM Proxy UI - Functional Tests', () => {
   test.beforeEach(async ({ request }) => {
@@ -23,7 +23,7 @@ test.describe('HTTP MITM Proxy UI - Functional Tests', () => {
     await page.goto('/');
 
     require('child_process').execSync(
-      `curl -sk -x ${PROXY_URL} "https://httpbin.org/get?test=playwright-ui&timestamp=${Date.now()}"`,
+      `curl -sk --max-time 30 -x ${PROXY_URL} "https://httpbin.org/get?test=playwright-ui&timestamp=${Date.now()}"`,
       { encoding: 'utf8' }
     );
 

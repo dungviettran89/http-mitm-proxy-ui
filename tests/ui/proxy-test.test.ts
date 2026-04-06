@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:14096';
-const PROXY_URL = 'http://localhost:19090';
+const BASE_URL = 'http://127.0.0.1:14096';
+const PROXY_URL = 'http://127.0.0.1:19090';
 
 test.describe('HTTP MITM Proxy UI - Proxy Traffic Tests', () => {
   test.beforeEach(async ({ page, request }) => {

@@ -310,8 +310,8 @@ export class UIServer extends EventEmitter {
   async start(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.httpServer
-        .listen(this.config.uiPort, 'localhost', () => {
-          console.log(`UI Server listening on http://localhost:${this.config.uiPort}`)
+        .listen(this.config.uiPort, '127.0.0.1', () => {
+          console.log(`UI Server listening on http://127.0.0.1:${this.config.uiPort}`)
           resolve()
         })
         .on('error', reject)

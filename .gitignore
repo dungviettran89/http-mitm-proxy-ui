@@ -44,3 +44,5 @@ requests-db.json
 src/**/*.js
 src/**/*.js.map
 ui/dist/
+*.tmp
+docs/test-ca/

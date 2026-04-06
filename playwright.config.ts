@@ -1,8 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 import * as path from 'path';
 
-const installDir = path.resolve('test-node-modules');
-const serverEntry = path.join(installDir, 'node_modules/http-mitm-proxy-ui/dist/index.js');
+const serverEntry = path.resolve('dist/index.js');
 const sslCaDir = path.resolve('docs/test-ca');
 
 export default defineConfig({
@@ -17,12 +16,12 @@ export default defineConfig({
   workers: 1,
   reporter: 'list',
   use: {
-    baseURL: 'http://localhost:14096',
+    baseURL: 'http://127.0.0.1:14096',
     trace: 'on-first-retry',
   },
   webServer: {
     command: `node "${serverEntry}" --proxy-port 19090 --ui-port 14096 --ssl-ca-dir "${sslCaDir}"`,
-    port: 14096,
+    url: 'http://127.0.0.1:14096/api/health',
     timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,
     stdout: 'pipe',

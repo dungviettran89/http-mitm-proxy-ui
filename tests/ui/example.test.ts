@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const PROXY_URL = 'http://localhost:19090';
+const PROXY_URL = 'http://127.0.0.1:19090';
 
 test('should load the HTTP MITM Proxy UI', async ({ page }) => {
   await page.goto('/');
@@ -12,7 +12,7 @@ test('should show request list after proxy traffic', async ({ page, request }) =
   await page.goto('/');
 
   require('child_process').execSync(
-    `curl -sk -x ${PROXY_URL} "https://httpbin.org/get?test=example"`,
+    `curl -sk --max-time 30 -x ${PROXY_URL} "https://httpbin.org/get?test=example"`,
     { encoding: 'utf8' }
   );
 

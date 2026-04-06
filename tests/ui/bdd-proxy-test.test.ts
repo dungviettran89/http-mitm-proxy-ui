@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test';
 
 const PROXY_PORT = 19090;
 const UI_PORT = 14096;
-const BASE_URL = `http://localhost:${UI_PORT}`;
-const PROXY_URL = `http://localhost:${PROXY_PORT}`;
+const BASE_URL = `http://127.0.0.1:${UI_PORT}`;
+const PROXY_URL = `http://127.0.0.1:${PROXY_PORT}`;
 
 test.describe('HTTP MITM Proxy UI - BDD Style Tests', () => {
   test.beforeEach(async ({ page, request }) => {
