@@ -49,3 +49,4 @@ docs/test-ca/
 *.tmp
 test-results/
 .qwen/
+*.tgz
