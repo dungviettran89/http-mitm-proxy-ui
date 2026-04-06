@@ -11,6 +11,7 @@ TEST_DIR="$(pwd)"
 PID_FILE="/tmp/http-mitm-proxy-integration-test.pid"
 LOG_FILE="/tmp/http-mitm-proxy-integration-test.log"
 TGZ_FILE=""
+INSTALL_DIR=""
 
 # Cleanup function
 cleanup() {
@@ -36,7 +37,11 @@ cleanup() {
     rm -f "$PID_FILE"
   fi
   # Clean up test CA directory
-  rm -rf "../docs/test-ca" 2>/dev/null || true
+  rm -rf "$TEST_DIR/docs/test-ca" 2>/dev/null || true
+  # Clean up temp install directory
+  if [[ -n "$INSTALL_DIR" && -d "$INSTALL_DIR" ]]; then
+    rm -rf "$INSTALL_DIR" 2>/dev/null || true
+  fi
   # Clean up tgz file
   if [[ -n "$TGZ_FILE" && -f "$TGZ_FILE" ]]; then
     rm -f "$TGZ_FILE"
@@ -65,17 +70,35 @@ if [[ ! -f "$TGZ_FILE" ]]; then
 fi
 echo "✅ Package packed: $TGZ_FILE"
 
-# Step 2: Start the proxy server in background using npx with the tgz
+# Step 2: Install the tgz in a temp directory, patch http-mitm-proxy, then start
 echo ""
-echo "🚀 Step 2: Starting proxy server via npx packed package..."
+echo "🚀 Step 2: Installing packed package and applying patches..."
+INSTALL_DIR=$(mktemp -d)
+cd "$INSTALL_DIR"
+npm init -y > /dev/null 2>&1
+npm install "$TEST_DIR/$TGZ_FILE" > /dev/null 2>&1
+
+# Manually patch http-mitm-proxy (patch-package doesn't work for installed packages
+# because npm hoists dependencies, so patch-package can't find them relative to the package root)
+PROXY_JS="$INSTALL_DIR/node_modules/http-mitm-proxy/dist/lib/proxy.js"
+if [[ -f "$PROXY_JS" ]]; then
+  sed -i '' 's/host: "0\.0\.0\.0"/host: "127.0.0.1"/g' "$PROXY_JS"
+  sed -i '' 's/options\.host || "localhost"/options.host || "127.0.0.1"/g' "$PROXY_JS"
+  echo "✅ http-mitm-proxy patched successfully"
+else
+  echo "❌ Could not find http-mitm-proxy proxy.js to patch"
+  exit 1
+fi
+
+echo "   Starting proxy server..."
 echo "   Proxy port: $PROXY_PORT"
 echo "   UI port: $UI_PORT"
 
-# Start server with test configuration using npx -y to skip prompts
-npx -y "./$TGZ_FILE" \
+# Start server with test configuration from the patched install
+node "$INSTALL_DIR/node_modules/http-mitm-proxy-ui/dist/index.js" \
   --proxy-port "$PROXY_PORT" \
   --ui-port "$UI_PORT" \
-  --ssl-ca-dir "../docs/test-ca" \
+  --ssl-ca-dir "$TEST_DIR/docs/test-ca" \
   --max-requests 1000 \
   >> "$LOG_FILE" 2>&1 &
 
@@ -243,7 +266,7 @@ fi
 # Step 7: Test CA certificate endpoint
 echo ""
 echo "🔐 Step 9: Testing CA certificate endpoint..."
-if [[ -d "../docs/test-ca" ]]; then
+if [[ -d "$TEST_DIR/docs/test-ca" ]]; then
   CERT_TEST=$(curl -s -w "%{http_code}" -o /dev/null "http://localhost:$UI_PORT/api/ca-cert")
   if [[ "$CERT_TEST" -eq 200 ]] || [[ "$CERT_TEST" -eq 404 ]]; then
     echo "    ✅ CA certificate endpoint accessible (HTTP $CERT_TEST)"

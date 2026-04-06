@@ -153,6 +153,7 @@ export class MitmProxy extends EventEmitter {
       this.proxy.listen(
         {
           port: this.config.proxyPort,
+          host: '127.0.0.1',
           sslCaDir: this.config.sslCaDir ?? 'ca',
         },
         (err: Error | null | undefined) => {

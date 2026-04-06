@@ -3,6 +3,7 @@ import * as path from 'path';
 
 const installDir = path.resolve('test-node-modules');
 const serverEntry = path.join(installDir, 'node_modules/http-mitm-proxy-ui/dist/index.js');
+const sslCaDir = path.resolve('docs/test-ca');
 
 export default defineConfig({
   testDir: './tests/ui',
@@ -20,7 +21,7 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: `node "${serverEntry}" --proxy-port 19090 --ui-port 14096 --ssl-ca-dir ./docs/test-ca`,
+    command: `node "${serverEntry}" --proxy-port 19090 --ui-port 14096 --ssl-ca-dir "${sslCaDir}"`,
     port: 14096,
     timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,
