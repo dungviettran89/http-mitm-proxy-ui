@@ -59,8 +59,12 @@ Starts with a single command. Bundles the proxy server and Vue 3 dashboard into 
 ├── patches/                    # patch-package patches for dependencies
 │   └── http-mitm-proxy+1.1.0.patch  # macOS IPv4 fix
 ├── tests/                      # Playwright BDD tests
-├── test-clients/               # Node.js HTTP client test scripts
-├── test-ca/                    # Test SSL certificates (regenerated per run)
+│   └── integration-test.sh    # End-to-end integration test script
+│   └── simple-test.sh         # Simple functionality test
+│   └── test-integration.sh    # Alternative integration test
+│   └── setup-test-env.sh      # Test environment setup
+├── docs/test-clients/          # Node.js HTTP client test scripts
+├── docs/test-ca/               # Test SSL certificates (regenerated per run)
 ├── dist/                       # Build output (git-ignored)
 │   ├── index.js, proxy/, ui/   # Compiled backend
 │   └── public/                 # Compiled Vue frontend
@@ -78,7 +82,7 @@ Starts with a single command. Bundles the proxy server and Vue 3 dashboard into 
 | `npm run dev` | Watch TypeScript + Vite dev server |
 | `npm start` | Run compiled backend |
 | `npx http-mitm-proxy-ui` | CLI entry (after global install) |
-| `bash integration-test.sh` | End-to-end integration tests |
+| `bash tests/integration-test.sh` | End-to-end integration tests |
 
 ## Build Pipeline
 
@@ -133,7 +137,7 @@ Auto-applied on `npm install` via the `postinstall` script running `patch-packag
 - Keyboard shortcuts: Ctrl+L (search), Ctrl+K (clear filters), Ctrl+E (export), Escape (close)
 
 ### Testing
-- Integration tests: `integration-test.sh` (builds, starts proxy, makes HTTPS requests, verifies API)
+- Integration tests: `tests/integration-test.sh` (builds, starts proxy, makes HTTPS requests, verifies API)
 - HTTPS requests through the proxy need `curl -sk` (insecure flag) since curl doesn't trust the dynamic CA
 - BDD tests: `tests/ui/*.feature` + Playwright
 
@@ -166,7 +170,7 @@ lsof -ti:19090 2>/dev/null | xargs kill -9 2>/dev/null
 lsof -ti:14096 2>/dev/null | xargs kill -9 2>/dev/null
 rm -f /tmp/http-mitm-*.pid /tmp/http-mitm-*.log
 
-bash integration-test.sh
+bash tests/integration-test.sh
 ```
 All 15 test assertions must pass.
 

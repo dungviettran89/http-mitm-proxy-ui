@@ -20,7 +20,7 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: `node "${serverEntry}" --proxy-port 19090 --ui-port 14096 --ssl-ca-dir ./test-ca`,
+    command: `node "${serverEntry}" --proxy-port 19090 --ui-port 14096 --ssl-ca-dir ./docs/test-ca`,
     port: 14096,
     timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,

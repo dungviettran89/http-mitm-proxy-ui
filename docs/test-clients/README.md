@@ -30,7 +30,7 @@ The test client makes various types of requests to [Postman Echo](https://www.po
 
 2. Install test client dependencies:
    ```bash
-   cd test-clients
+   cd ../test-clients
    npm install
    ```
 
@@ -243,7 +243,7 @@ The following test cases cover all major functions of http-mitm-proxy-ui. Run th
 1. Stop any running proxy instances
 2. Start proxy with custom SSL directory:
    ```
-   http-mitm-proxy-ui --ssl-ca-dir ./test-ca
+   http-mitm-proxy-ui --ssl-ca-dir ../docs/test-ca
    ```
 3. Access http://localhost:3000/api/ca-cert to download certificate
 4. Install certificate in system/trust store (follow OS-specific instructions)
@@ -251,7 +251,7 @@ The following test cases cover all major functions of http-mitm-proxy-ui. Run th
 6. Verify request is intercepted and visible in UI
 
 **Expected Results**:
-- CA certificate generated in ./test-ca directory
+- CA certificate generated in ../docs/test-ca directory
 - Certificate download works via API endpoint
 - After certificate trust installed, HTTPS requests succeed
 - Full request/response details visible in UI for HTTPS traffic
@@ -262,7 +262,7 @@ The following test cases cover all major functions of http-mitm-proxy-ui. Run th
 Each test client is a standalone Node.js script. To run them:
 
 ```bash
-# From the test-clients directory
+# From the docs/test-clients directory
 node get-request.js
 node post-request.js
 node headers-request.js
@@ -301,7 +301,7 @@ If you encounter issues:
 
 After testing:
 1. Stop the proxy with Ctrl+C
-2. Remove test CA directory if created: `rm -rf ./test-ca`
+2. Remove test CA directory if created: `rm -rf ../docs/test-ca`
 3. Remove any exported test files
 4. The proxy leaves no persistent state by default (history is in-memory only unless configured otherwise)
 

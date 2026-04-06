@@ -229,7 +229,7 @@ GET https://httpbin.org/bytes/1024
 {
   "proxyPort": 8080,
   "uiPort": 3000,
-  "sslCaDir": "./test-certs",
+  "sslCaDir": "../../docs/test-ca",
   "maxRequests": 100,
   "enableModification": true,
   "headless": false

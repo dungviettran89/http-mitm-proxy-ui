@@ -2,7 +2,7 @@
 
 A self-contained Node.js package that bundles `http-mitm-proxy` with a modern web-based UI for inspecting HTTP/HTTPS traffic in real time.
 
-![http-mitm-proxy-ui screenshot](docs/screenshot.png)
+![http-mitm-proxy-ui screenshot](docs/images/screenshot.png)
 
 ## Features
 
@@ -17,8 +17,8 @@ A self-contained Node.js package that bundles `http-mitm-proxy` with a modern we
 
 ## Guides
 
-- 📖 **[User Guide](guides/USER-GUIDE.md)** — Complete documentation with screenshots
-- 🔍 **[Qwen Code Use Cases](guides/use-cases-qwen-code.md)** — Inspect Qwen Code API traffic with examples
+- 📖 **[User Guide](docs/guides/USER-GUIDE.md)** — Complete documentation with screenshots
+- 🔍 **[Qwen Code Use Cases](docs/guides/use-cases-qwen-code.md)** — Inspect Qwen Code API traffic with examples
 
 ## Installation
 

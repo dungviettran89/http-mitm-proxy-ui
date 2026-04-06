@@ -23,7 +23,7 @@ cleanup() {
     fi
     rm -f "$PID_FILE"
   fi
-  rm -rf "./test-ca" 2>/dev/null || true
+  rm -rf "../docs/test-ca" 2>/dev/null || true
   echo "🧹 Cleanup complete"
 }
 
@@ -31,12 +31,12 @@ cleanup() {
 trap cleanup EXIT
 
 # Check if dist files exist
-if [[ ! -f "dist/index.js" ]]; then
+if [[ ! -f "../dist/index.js" ]]; then
   echo "❌ dist/index.js not found! Please run: npm run build"
   exit 1
 fi
 
-if [[ ! -f "dist/ui/index.html" ]]; then
+if [[ ! -f "../dist/ui/index.html" ]]; then
   echo "❌ dist/ui/index.html not found! Frontend not built."
   exit 1
 fi
@@ -51,10 +51,10 @@ echo "🚀 Starting proxy server..."
 echo "   Proxy port: $PROXY_PORT"
 echo "   UI port: $UI_PORT"
 
-node dist/index.js \
+node ../dist/index.js \
   --proxy-port "$PROXY_PORT" \
   --ui-port "$UI_PORT" \
-  --ssl-ca-dir "./test-ca" \
+  --ssl-ca-dir "../docs/test-ca" \
   >> "$LOG_FILE" 2>&1 &
 
 SERVER_PID=$!

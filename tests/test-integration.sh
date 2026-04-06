@@ -44,10 +44,10 @@ echo "✅ Build successful"
 
 # Step 2: Start the proxy server in background
 echo "🚀 Starting proxy server on ports $PROXY_PORT (proxy) and $UI_PORT (UI)..."
-node dist/index.js \
+node ../dist/index.js \
   --proxy-port "$PROXY_PORT" \
   --ui-port "$UI_PORT" \
-  --ssl-ca-dir "./test-ca" \
+  --ssl-ca-dir "../docs/test-ca" \
   >> "$LOG_FILE" 2>&1 &
 
 echo $! > "$PID_FILE"
@@ -197,7 +197,7 @@ fi
 
 # Step 7: Test CA certificate endpoint
 echo "🔐 Testing CA certificate endpoint..."
-if [[ -d "./test-ca" ]]; then
+if [[ -d "../docs/test-ca" ]]; then
   CERT_TEST=$(curl -s -w "%{http_code}" -o /dev/null "http://localhost:$UI_PORT/api/ca-cert")
   if [[ "$CERT_TEST" -eq 200 ]] || [[ "$CERT_TEST" -eq 404 ]]; then  # 404 is OK if cert not yet generated
     echo "    ✅ CA certificate endpoint accessible"

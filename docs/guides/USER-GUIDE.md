@@ -144,7 +144,7 @@ All intercepted traffic appears in real time.
 
 ## UI Overview
 
-![HTTP MITM Proxy UI — Main Dashboard](screenshots/overview.png)
+![HTTP MITM Proxy UI — Main Dashboard](../images/screenshots/overview.png)
 
 The main dashboard provides a live view of all intercepted HTTP/HTTPS traffic. The interface is organized into three main areas:
 
@@ -182,7 +182,7 @@ The main content area displays all captured requests in a sortable table with th
 
 Click any row in the request table to open the **Request Detail Panel**. The panel slides in from the right side of the screen, overlaying the main table.
 
-![Request Detail Panel](screenshots/request-detail.png)
+![Request Detail Panel](../images/screenshots/request-detail.png)
 
 The detail panel contains four tabs for comprehensive inspection:
 
@@ -222,7 +222,7 @@ Performance metrics for the request lifecycle:
 
 ## Filtering & Searching
 
-![Filter & Search Controls](screenshots/filters.png)
+![Filter & Search Controls](../images/screenshots/filters.png)
 
 The filter bar provides multiple ways to narrow down captured traffic.
 
@@ -258,7 +258,7 @@ Click any column header (**Time**, **Method**, **URL**, **Status**) to sort the 
 
 ### Response Body View
 
-![Response Body with JSON](screenshots/response-body.png)
+![Response Body with JSON](../images/screenshots/response-body.png)
 
 The Response tab displays the full response body with automatic formatting:
 
@@ -285,7 +285,7 @@ Use the response body view to:
 
 ## Proxy Configuration
 
-![Proxy Configuration & Status](screenshots/proxy-config.png)
+![Proxy Configuration & Status](../images/screenshots/proxy-config.png)
 
 The header bar displays the current proxy status and configuration:
 
@@ -303,7 +303,7 @@ Click the **Clear** button to remove all captured requests from the UI and the u
 
 ## Exporting Data
 
-![Export Dialog](screenshots/export.png)
+![Export Dialog](../images/screenshots/export.png)
 
 Export captured traffic for offline analysis, sharing with team members, or archiving.
 

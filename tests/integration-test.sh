@@ -36,7 +36,7 @@ cleanup() {
     rm -f "$PID_FILE"
   fi
   # Clean up test CA directory
-  rm -rf "./test-ca" 2>/dev/null || true
+  rm -rf "../docs/test-ca" 2>/dev/null || true
   # Clean up tgz file
   if [[ -n "$TGZ_FILE" && -f "$TGZ_FILE" ]]; then
     rm -f "$TGZ_FILE"
@@ -75,7 +75,7 @@ echo "   UI port: $UI_PORT"
 npx -y "./$TGZ_FILE" \
   --proxy-port "$PROXY_PORT" \
   --ui-port "$UI_PORT" \
-  --ssl-ca-dir "./test-ca" \
+  --ssl-ca-dir "../docs/test-ca" \
   --max-requests 1000 \
   >> "$LOG_FILE" 2>&1 &
 
@@ -243,7 +243,7 @@ fi
 # Step 7: Test CA certificate endpoint
 echo ""
 echo "🔐 Step 9: Testing CA certificate endpoint..."
-if [[ -d "./test-ca" ]]; then
+if [[ -d "../docs/test-ca" ]]; then
   CERT_TEST=$(curl -s -w "%{http_code}" -o /dev/null "http://localhost:$UI_PORT/api/ca-cert")
   if [[ "$CERT_TEST" -eq 200 ]] || [[ "$CERT_TEST" -eq 404 ]]; then
     echo "    ✅ CA certificate endpoint accessible (HTTP $CERT_TEST)"

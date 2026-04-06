@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/dungviettran89/http-mitm-proxy-ui#readme",
   "scripts": {
-    "test": "bash integration-test.sh",
+    "test": "bash tests/integration-test.sh",
     "build": "tsc && npx vite build --base ./",
     "format": "prettier --write \"src/**/*.{ts,js}\" \"ui/src/**/*.{vue,ts,js,css}\"",
     "format:check": "prettier --check \"src/**/*.{ts,js}\" \"ui/src/**/*.{vue,ts,js,css}\"",
