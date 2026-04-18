@@ -138,6 +138,74 @@ export class UIServer extends EventEmitter {
       }
     })
 
+    // GET /api/spec — get generated OpenAPI spec
+    this.app.get('/api/spec', (_req: Request, res: Response) => {
+      const spec = this.proxy.getSpec()
+      if (spec) {
+        res.json(spec)
+      } else {
+        res.status(404).json({ error: 'Spec not found' })
+      }
+    })
+
+    // POST /api/spec/generate — build spec from mappings
+    this.app.post('/api/spec/generate', async (req: Request, res: Response) => {
+      const { mappings } = req.body
+      if (!Array.isArray(mappings)) {
+        res.status(400).json({ error: 'Invalid mappings' })
+        return
+      }
+      try {
+        const spec = await this.proxy.generateSpec(mappings)
+        res.json(spec)
+      } catch (err: any) {
+        res.status(500).json({ error: err.message })
+      }
+    })
+
+    // PATCH /api/spec/update-endpoint — update a specific endpoint in the spec
+    this.app.patch('/api/spec/update-endpoint', async (req: Request, res: Response) => {
+      const { path: apiPath, method } = req.body
+      if (!apiPath || !method) {
+        res.status(400).json({ error: 'Missing path or method' })
+        return
+      }
+      const spec = this.proxy.getSpec()
+      if (!spec) {
+        res.status(404).json({ error: 'Spec not found' })
+        return
+      }
+
+      // Find relevant requests and re-infer schema
+      const requests = this.proxy.getRequests().filter((r) => {
+        if (r.method.toUpperCase() !== method.toUpperCase()) return false
+        const urlObj = new URL(r.url.startsWith('http') ? r.url : `http://dummy${r.url}`)
+        return this.matchPath(apiPath, urlObj.pathname)
+      })
+
+      if (requests.length === 0) {
+        res.status(404).json({ error: 'No requests found for this endpoint' })
+        return
+      }
+
+      // This is a simplified update: just re-runs inferSchema for this op
+      const bodies = requests.map((r) => r.response?.body).filter(Boolean)
+      if (bodies.length > 0) {
+        const schema = this.proxy.inferSchema(bodies)
+        if (spec.paths[apiPath] && spec.paths[apiPath][method.toLowerCase()]) {
+          spec.paths[apiPath][method.toLowerCase()].responses['200'].content[
+            'application/json'
+          ].schema = schema
+          await this.proxy.saveSpec(spec)
+          res.json(spec)
+        } else {
+          res.status(404).json({ error: 'Endpoint not found in spec' })
+        }
+      } else {
+        res.json(spec)
+      }
+    })
+
     // Serve static files from the Vue build output
     if (fs.existsSync(this.uiDistPath)) {
       this.app.use(express.static(this.uiDistPath, { maxAge: '1d' }))
@@ -224,6 +292,12 @@ export class UIServer extends EventEmitter {
     }
 
     return filtered
+  }
+
+  private matchPath(pattern: string, path: string): boolean {
+    const regexSource = pattern.replace(/{[^/]+}/g, '([^/]+)')
+    const regex = new RegExp(`^${regexSource}$`)
+    return regex.test(path)
   }
 
   private setupWebSocket(): void {

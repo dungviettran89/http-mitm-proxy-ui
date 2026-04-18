@@ -27,6 +27,11 @@ export interface ResponseRecord {
   responseTime?: number
 }
 
+export interface PathMapping {
+  pattern: string
+  methods: string[]
+}
+
 export interface ProxyUIConfig {
   proxyPort: number
   uiPort: number
@@ -200,5 +205,12 @@ export class MitmProxy extends EventEmitter {
 
   inferSchema(bodies: any[]) {
     return this.specService.inferSchema(bodies)
+  }
+
+  async generateSpec(mappings: PathMapping[]) {
+    const requests = this.getRequests()
+    const spec = this.specService.generateSpec(mappings, requests)
+    await this.saveSpec(spec)
+    return spec
   }
 }
