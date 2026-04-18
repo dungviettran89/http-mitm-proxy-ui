@@ -35,18 +35,21 @@
     "express": "^5.2.1",
     "http-mitm-proxy": "^1.1.0",
     "lowdb": "^7.0.1",
+    "to-json-schema": "^0.2.5",
     "ws": "^8.18.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1",
     "@types/express": "^5.0.6",
     "@types/node": "^25.5.2",
+    "@types/to-json-schema": "^0.2.4",
     "@types/ws": "^8.18.1",
     "@vitejs/plugin-vue": "^6.0.5",
     "@vue/compiler-sfc": "^3.5.32",
     "concurrently": "^9.2.0",
     "flexsearch": "^0.8.212",
     "prettier": "^3.8.1",
+    "tsx": "^4.21.0",
     "typescript": "^6.0.2",
     "vite": "^8.0.3",
     "vue": "^3.5.32"

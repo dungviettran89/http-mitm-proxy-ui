@@ -1,6 +1,9 @@
 import { Proxy } from 'http-mitm-proxy'
 import { EventEmitter } from 'events'
+import * as crypto from 'crypto'
 import { RequestStore } from './RequestStore'
+import { SpecStore } from './SpecStore'
+import { SpecService } from './SpecService'
 
 export interface RequestRecord {
   id: string
@@ -45,6 +48,8 @@ export interface ProxyEvents {
 export class MitmProxy extends EventEmitter {
   private proxy: Proxy
   private store: RequestStore
+  private specStore: SpecStore
+  private specService: SpecService
   private config: ProxyUIConfig
   private initialized = false
 
@@ -53,6 +58,10 @@ export class MitmProxy extends EventEmitter {
     this.config = config
     this.proxy = new Proxy()
     this.store = new RequestStore(config.dbPath)
+    this.specStore = new SpecStore(
+      config.dbPath ? config.dbPath.replace('requests-db.json', 'specs-db.json') : undefined
+    )
+    this.specService = new SpecService()
     this.setupProxyHandlers()
   }
 
@@ -60,13 +69,14 @@ export class MitmProxy extends EventEmitter {
    * Initialize the persistent store. Must be called before any data operations.
    */
   async init(): Promise<void> {
-    await this.store.init()
+    await Promise.all([this.store.init(), this.specStore.init()])
     this.initialized = true
   }
 
   private setupProxyHandlers(): void {
     this.proxy.onRequest((ctx, callback) => {
       const id = crypto.randomUUID()
+      ;(ctx as any)._requestId = id
       const requestRecord: RequestRecord = {
         id,
         timestamp: Date.now(),
@@ -139,12 +149,7 @@ export class MitmProxy extends EventEmitter {
   }
 
   private findRequestId(ctx: any): string | null {
-    for (const req of this.store.getAll()) {
-      if (req.url === ctx.clientToProxyRequest?.url && req.timestamp > Date.now() - 30000) {
-        return req.id
-      }
-    }
-    return null
+    return ctx._requestId || null
   }
 
   async start(): Promise<void> {
@@ -183,5 +188,17 @@ export class MitmProxy extends EventEmitter {
 
   async clearRequests(): Promise<void> {
     await this.store.clear()
+  }
+
+  getSpec() {
+    return this.specStore.get()
+  }
+
+  async saveSpec(spec: any) {
+    await this.specStore.save(spec)
+  }
+
+  inferSchema(bodies: any[]) {
+    return this.specService.inferSchema(bodies)
   }
 }
