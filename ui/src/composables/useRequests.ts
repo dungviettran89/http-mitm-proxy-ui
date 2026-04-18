@@ -1,6 +1,18 @@
 import { ref, readonly, computed } from 'vue'
-import type { RequestRecord, SortState, FilterState } from '../types'
-import { fetchRequests, clearRequests as apiClearRequests } from '../services/api'
+import type {
+  RequestRecord,
+  SortState,
+  FilterState,
+  OpenApiSpec,
+  PathMapping,
+} from '../types'
+import {
+  fetchRequests,
+  clearRequests as apiClearRequests,
+  fetchSpec,
+  generateSpec as apiGenerateSpec,
+  updateEndpoint as apiUpdateEndpoint,
+} from '../services/api'
 import { wsService } from '../services/websocket'
 
 const requests = ref<RequestRecord[]>([])
@@ -24,6 +36,8 @@ const filters = ref<FilterState>({
 })
 
 const selectedId = ref<string | null>(null)
+const spec = ref<OpenApiSpec | null>(null)
+const isGenerating = ref(false)
 
 const filteredAndSorted = computed(() => {
   let result = [...requests.value]
@@ -202,6 +216,32 @@ function setupWebSocket(): void {
 }
 
 export function useRequests() {
+  async function loadSpec() {
+    try {
+      spec.value = await fetchSpec()
+    } catch (err) {
+      // Spec might not exist yet, which is fine
+      spec.value = null
+    }
+  }
+
+  async function generateSpec(mappings: PathMapping[]) {
+    isGenerating.value = true
+    try {
+      spec.value = await apiGenerateSpec(mappings)
+    } finally {
+      isGenerating.value = false
+    }
+  }
+
+  async function updateEndpoint(apiPath: string, method: string) {
+    try {
+      spec.value = await apiUpdateEndpoint(apiPath, method)
+    } catch (err: any) {
+      error.value = err.message
+    }
+  }
+
   return {
     requests: readonly(requests),
     loading: readonly(loading),
@@ -211,6 +251,8 @@ export function useRequests() {
     sort: readonly(sort),
     filters: readonly(filters),
     selectedId: readonly(selectedId),
+    spec: readonly(spec),
+    isGenerating: readonly(isGenerating),
     filteredAndSorted,
     selectedRequest,
     loadRequests,
@@ -221,5 +263,8 @@ export function useRequests() {
     clearFilters,
     hasActiveFilters,
     setupWebSocket,
+    loadSpec,
+    generateSpec,
+    updateEndpoint,
   }
 }

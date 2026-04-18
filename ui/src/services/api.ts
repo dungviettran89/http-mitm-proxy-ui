@@ -1,4 +1,10 @@
-import type { RequestRecord, ProxyConfig, ApiResponse } from '../types'
+import type {
+  RequestRecord,
+  ProxyConfig,
+  ApiResponse,
+  OpenApiSpec,
+  PathMapping,
+} from '../types'
 
 const BASE_URL = ''
 
@@ -41,4 +47,30 @@ export function getCACertUrl(): string {
 export function getWebSocketUrl(): string {
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
   return `${protocol}//${window.location.host}/ws`
+}
+
+export async function fetchSpec(): Promise<OpenApiSpec> {
+  const res = await fetch(`${BASE_URL}/api/spec`)
+  if (!res.ok) throw new Error(`Failed to fetch spec: ${res.statusText}`)
+  return res.json()
+}
+
+export async function generateSpec(mappings: PathMapping[]): Promise<OpenApiSpec> {
+  const res = await fetch(`${BASE_URL}/api/spec/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mappings }),
+  })
+  if (!res.ok) throw new Error(`Failed to generate spec: ${res.statusText}`)
+  return res.json()
+}
+
+export async function updateEndpoint(apiPath: string, method: string): Promise<OpenApiSpec> {
+  const res = await fetch(`${BASE_URL}/api/spec/update-endpoint`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ path: apiPath, method }),
+  })
+  if (!res.ok) throw new Error(`Failed to update endpoint: ${res.statusText}`)
+  return res.json()
 }

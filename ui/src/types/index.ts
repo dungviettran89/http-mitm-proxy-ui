@@ -58,3 +58,17 @@ export interface FilterState {
 
 export type ExportFormat = 'json' | 'csv'
 export type ExportScope = 'all' | 'filtered' | 'selected'
+
+export interface PathMapping {
+  pattern: string
+  methods: string[]
+}
+
+export interface OpenApiSpec {
+  openapi: string
+  info: {
+    title: string
+    version: string
+  }
+  paths: Record<string, any>
+}

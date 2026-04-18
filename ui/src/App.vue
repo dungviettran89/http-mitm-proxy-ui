@@ -18,9 +18,11 @@ const {
   clearRequests,
   setupWebSocket,
   hasActiveFilters,
+  loadSpec,
 } = useRequests()
 
 const showDetail = ref(false)
+const currentTab = ref<'requests' | 'spec'>('requests')
 
 function handleRowClick(id: string): void {
   selectRequest(id)
@@ -41,6 +43,7 @@ function handleClearHistory(): void {
 onMounted(() => {
   setupWebSocket()
   loadRequests()
+  loadSpec()
 })
 
 onUnmounted(() => {
@@ -52,7 +55,24 @@ onUnmounted(() => {
   <div class="app-container">
     <ProxyHeader :request-count="total" @clear-history="handleClearHistory" />
 
-    <div class="main-content">
+    <div class="app-tabs">
+      <button
+        class="tab-btn"
+        :class="{ active: currentTab === 'requests' }"
+        @click="currentTab = 'requests'"
+      >
+        Requests
+      </button>
+      <button
+        class="tab-btn"
+        :class="{ active: currentTab === 'spec' }"
+        @click="currentTab = 'spec'"
+      >
+        Swagger Spec
+      </button>
+    </div>
+
+    <div v-if="currentTab === 'requests'" class="main-content">
       <FilterBar />
 
       <div v-if="error" class="error-banner">
@@ -78,6 +98,14 @@ onUnmounted(() => {
         :loading="loading"
         @row-click="handleRowClick"
       />
+    </div>
+
+    <div v-else class="main-content">
+      <div class="empty-state">
+        <h3>Swagger Spec View</h3>
+        <p>This is where you will map and view your OpenAPI specification.</p>
+        <p>Implementation of the mapping interface is next!</p>
+      </div>
     </div>
 
     <Transition name="slide-panel">
