@@ -65,6 +65,11 @@ export async function generateSpec(mappings: PathMapping[]): Promise<OpenApiSpec
   return res.json()
 }
 
+export async function resetSpec(): Promise<void> {
+  const res = await fetch(`${BASE_URL}/api/spec`, { method: 'DELETE' })
+  if (!res.ok) throw new Error(`Failed to reset spec: ${res.statusText}`)
+}
+
 export async function updateEndpoint(apiPath: string, method: string): Promise<OpenApiSpec> {
   const res = await fetch(`${BASE_URL}/api/spec/update-endpoint`, {
     method: 'PATCH',

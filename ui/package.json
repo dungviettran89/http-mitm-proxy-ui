@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "swagger-ui-dist": "^5.32.4",
     "vue": "^3.5.30"
   },
   "devDependencies": {

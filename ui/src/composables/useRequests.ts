@@ -12,6 +12,7 @@ import {
   fetchSpec,
   generateSpec as apiGenerateSpec,
   updateEndpoint as apiUpdateEndpoint,
+  resetSpec as apiResetSpec,
 } from '../services/api'
 import { wsService } from '../services/websocket'
 
@@ -234,6 +235,11 @@ export function useRequests() {
     }
   }
 
+  async function resetSpec() {
+    await apiResetSpec()
+    spec.value = null
+  }
+
   async function updateEndpoint(apiPath: string, method: string) {
     try {
       spec.value = await apiUpdateEndpoint(apiPath, method)
@@ -265,6 +271,7 @@ export function useRequests() {
     setupWebSocket,
     loadSpec,
     generateSpec,
+    resetSpec,
     updateEndpoint,
   }
 }

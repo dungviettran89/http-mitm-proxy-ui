@@ -163,6 +163,12 @@ export class UIServer extends EventEmitter {
       }
     })
 
+    // DELETE /api/spec — reset the generated spec
+    this.app.delete('/api/spec', async (_req: Request, res: Response) => {
+      await this.proxy.saveSpec(null)
+      res.json({ message: 'Spec reset' })
+    })
+
     // PATCH /api/spec/update-endpoint — update a specific endpoint in the spec
     this.app.patch('/api/spec/update-endpoint', async (req: Request, res: Response) => {
       const { path: apiPath, method } = req.body
