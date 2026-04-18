@@ -7,12 +7,46 @@ export class SpecService {
    */
   inferSchema(bodies: any[]): any {
     if (bodies.length === 0) return {}
-    // Simplification: use the first one as representative for now
-    // Later we can merge schemas from all samples
+    
     try {
-      const body = bodies[0]
-      const data = typeof body === 'string' ? JSON.parse(body) : body
-      return toJsonSchema(data)
+      const schemas = bodies.map(body => {
+        const data = typeof body === 'string' ? JSON.parse(body) : body
+        return toJsonSchema(data)
+      })
+
+      if (schemas.length === 1) return schemas[0]
+
+      // Find all possible properties across all samples
+      const allProps = new Set<string>()
+      schemas.forEach(s => {
+        if (s.type === 'object' && s.properties) {
+          Object.keys(s.properties).forEach(p => allProps.add(p))
+        }
+      })
+
+      // Identify required properties (those present in all samples BEFORE we modify anything)
+      const required = Array.from(allProps).filter(prop => {
+        return schemas.every(s => s.type === 'object' && s.properties && Object.prototype.hasOwnProperty.call(s.properties, prop))
+      })
+
+      // Construct merged schema
+      const mergedSchema: any = {
+        type: 'object',
+        properties: {}
+      }
+
+      allProps.forEach(prop => {
+        const matchingSchema = schemas.find(s => s.properties?.[prop])
+        if (matchingSchema) {
+          mergedSchema.properties[prop] = matchingSchema.properties[prop]
+        }
+      })
+
+      if (required.length > 0) {
+        mergedSchema.required = required
+      }
+      
+      return mergedSchema
     } catch {
       return { type: 'string' }
     }
@@ -57,7 +91,7 @@ export class SpecService {
     return spec
   }
 
-  private matchPath(pattern: string, path: string): boolean {
+  public matchPath(pattern: string, path: string): boolean {
     const regexSource = pattern.replace(/{[^/]+}/g, '([^/]+)')
     const regex = new RegExp(`^${regexSource}$`)
     return regex.test(path)

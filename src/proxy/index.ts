@@ -207,6 +207,10 @@ export class MitmProxy extends EventEmitter {
     return this.specService.inferSchema(bodies)
   }
 
+  matchPath(pattern: string, path: string) {
+    return this.specService.matchPath(pattern, path)
+  }
+
   async generateSpec(mappings: PathMapping[]) {
     const requests = this.getRequests()
     const spec = this.specService.generateSpec(mappings, requests)

@@ -5,9 +5,15 @@ import type { RequestRecord, PathMapping } from '../types'
 
 const { requests, generateSpec, isGenerating } = useRequests()
 
+interface PathSegment {
+  value: string
+  isParam: boolean
+  paramName: string
+}
+
 interface PathEntry {
   method: string
-  segments: { value: string; isParam: boolean }[]
+  segments: PathSegment[]
   originalPath: string
 }
 
@@ -32,7 +38,11 @@ function initializeFromRequests() {
     const segments = entry.path
       .split('/')
       .filter((s) => s !== '')
-      .map((s) => ({ value: s, isParam: false }))
+      .map((s, idx) => ({ 
+        value: s, 
+        isParam: false,
+        paramName: `param${idx + 1}`
+      }))
     return {
       method: entry.method,
       segments,
@@ -46,7 +56,10 @@ const groupedEntries = computed(() => {
   const groups = new Map<string, { pattern: string; methods: Set<string> }>()
 
   pathEntries.value.forEach((entry) => {
-    const pattern = '/' + entry.segments.map((s) => (s.isParam ? '{param}' : s.value)).join('/')
+    const pattern = '/' + entry.segments
+      .map((s) => (s.isParam ? `{${s.paramName || 'param'}}` : s.value))
+      .join('/')
+    
     if (!groups.has(pattern)) {
       groups.set(pattern, { pattern, methods: new Set() })
     }
@@ -105,13 +118,22 @@ initializeFromRequests()
           <div class="path-segments">
             <span class="path-separator">/</span>
             <template v-for="(segment, sIdx) in entry.segments" :key="sIdx">
-              <span
-                class="segment"
-                :class="{ 'is-param': segment.isParam }"
-                @click="toggleParam(eIdx, sIdx)"
-              >
-                {{ segment.isParam ? '{param}' : segment.value }}
-              </span>
+              <div class="segment-container">
+                <span
+                  class="segment"
+                  :class="{ 'is-param': segment.isParam }"
+                  @click="toggleParam(eIdx, sIdx)"
+                >
+                  {{ segment.isParam ? `{${segment.paramName}}` : segment.value }}
+                </span>
+                <input
+                  v-if="segment.isParam"
+                  v-model="segment.paramName"
+                  class="param-name-input"
+                  placeholder="name"
+                  @click.stop
+                />
+              </div>
               <span v-if="sIdx < entry.segments.length - 1" class="path-separator">/</span>
             </template>
           </div>
@@ -120,3 +142,20 @@ initializeFromRequests()
     </div>
   </div>
 </template>
+
+<style scoped>
+.segment-container {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.param-name-input {
+  width: 60px;
+  font-size: 10px;
+  padding: 2px;
+  border: 1px solid var(--color-gray-lighter);
+  border-radius: 2px;
+  text-align: center;
+}
+</style>

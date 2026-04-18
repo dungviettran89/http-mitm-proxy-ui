@@ -186,7 +186,7 @@ export class UIServer extends EventEmitter {
       const requests = this.proxy.getRequests().filter((r) => {
         if (r.method.toUpperCase() !== method.toUpperCase()) return false
         const urlObj = new URL(r.url.startsWith('http') ? r.url : `http://dummy${r.url}`)
-        return this.matchPath(apiPath, urlObj.pathname)
+        return this.proxy.matchPath(apiPath, urlObj.pathname)
       })
 
       if (requests.length === 0) {
@@ -298,12 +298,6 @@ export class UIServer extends EventEmitter {
     }
 
     return filtered
-  }
-
-  private matchPath(pattern: string, path: string): boolean {
-    const regexSource = pattern.replace(/{[^/]+}/g, '([^/]+)')
-    const regex = new RegExp(`^${regexSource}$`)
-    return regex.test(path)
   }
 
   private setupWebSocket(): void {
