@@ -367,6 +367,86 @@ body {
 }
 
 /* ============================================
+   Path Mapping UI
+   ============================================ */
+
+.path-mapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.mapper-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--color-gray-lighter);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mapper-list {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+}
+
+.path-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-lighter);
+  border-radius: var(--border-radius-lg);
+  transition: box-shadow var(--transition-fast);
+}
+
+.path-row:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.path-row-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.path-segments {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  flex-wrap: wrap;
+}
+
+.path-separator {
+  color: var(--color-gray-light);
+  user-select: none;
+}
+
+.segment {
+  padding: 2px 8px;
+  background: var(--color-gray-lightest);
+  border: 1px solid var(--color-gray-lighter);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.segment:hover {
+  background: var(--color-gray-lighter);
+}
+
+.segment.is-param {
+  background: var(--color-primary-bg);
+  border-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+/* ============================================
    Main Content Area
    ============================================ */
 

@@ -6,6 +6,7 @@ import FilterBar from './components/FilterBar.vue'
 import RequestList from './components/RequestList.vue'
 import RequestDetail from './components/RequestDetail.vue'
 import EmptyState from './components/EmptyState.vue'
+import SwaggerView from './components/SwaggerView.vue'
 
 const {
   loading,
@@ -101,11 +102,7 @@ onUnmounted(() => {
     </div>
 
     <div v-else class="main-content">
-      <div class="empty-state">
-        <h3>Swagger Spec View</h3>
-        <p>This is where you will map and view your OpenAPI specification.</p>
-        <p>Implementation of the mapping interface is next!</p>
-      </div>
+      <SwaggerView />
     </div>
 
     <Transition name="slide-panel">
