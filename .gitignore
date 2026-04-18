@@ -4,6 +4,9 @@ node_modules/
 
 # Testing
 /coverage
+.playwright-mcp/
+playwright-report/
+test-results/
 
 # Production
 /build
@@ -47,6 +50,5 @@ ui/dist/
 *.tmp
 docs/test-ca/
 *.tmp
-test-results/
 .qwen/
 *.tgz
