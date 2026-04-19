@@ -1,11 +1,5 @@
 import { ref, readonly, computed } from 'vue'
-import type {
-  RequestRecord,
-  SortState,
-  FilterState,
-  OpenApiSpec,
-  PathMapping,
-} from '../types'
+import type { RequestRecord, SortState, FilterState, OpenApiSpec, PathMapping } from '../types'
 import {
   fetchRequests,
   clearRequests as apiClearRequests,

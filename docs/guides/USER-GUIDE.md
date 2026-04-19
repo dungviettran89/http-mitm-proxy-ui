@@ -11,9 +11,10 @@ A real-time HTTP/HTTPS traffic inspector with a modern web-based UI. Intercept, 
 3. [Inspecting Requests](#inspecting-requests)
 4. [Filtering & Searching](#filtering--searching)
 5. [Viewing Request & Response Details](#viewing-request--response-details)
-6. [Proxy Configuration](#proxy-configuration)
-7. [Exporting Data](#exporting-data)
-8. [Tips & Troubleshooting](#tips--troubleshooting)
+6. [Swagger Spec Generation](#swagger-spec-generation)
+7. [Proxy Configuration](#proxy-configuration)
+8. [Exporting Data](#exporting-data)
+9. [Tips & Troubleshooting](#tips--troubleshooting)
 
 ---
 
@@ -280,6 +281,28 @@ Use the response body view to:
 | `Ctrl+K` / `Cmd+K` | Clear all filters |
 | `Ctrl+E` / `Cmd+E` | Open export dialog |
 | `Escape` | Close detail panel or export dialog |
+
+---
+
+## Swagger Spec Generation
+
+![Swagger Spec](../images/screenshots/swagger-spec.png)
+
+The Proxy UI can automatically generate an OpenAPI 3.0 Specification based on the intercepted HTTP traffic. This is extremely useful for documenting undocumented APIs, creating client SDKs, or understanding unknown backend services.
+
+### Accessing the Swagger Spec
+Click the **Swagger Spec** tab next to the **Requests** tab above the main table.
+
+### Generating the Specification
+- As traffic flows through the proxy, the specification is not automatically rebuilt for every request (to save performance).
+- Click the **Update from Traffic** button to analyze all currently captured requests and generate or update the OpenAPI specification.
+- The generator automatically:
+  - Parses request/response bodies (including binary formats) to infer JSON schemas
+  - Extracts URL query parameters into standard OpenAPI `in: 'query'` parameters
+  - Filters out common browser headers but includes custom headers (like `Authorization` or `x-*`)
+
+### Resetting the Spec
+- Click **Reset Spec** to clear the generated specification and start over. This is useful when you want to clear old, irrelevant endpoints before capturing a specific new workflow.
 
 ---
 

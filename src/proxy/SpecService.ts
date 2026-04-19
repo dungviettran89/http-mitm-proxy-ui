@@ -1,16 +1,59 @@
 import toJsonSchema from 'to-json-schema'
 import type { RequestRecord, PathMapping } from '.'
 
+const IGNORED_HEADERS = new Set([
+  'host',
+  'connection',
+  'accept',
+  'user-agent',
+  'content-type',
+  'content-length',
+  'accept-encoding',
+  'accept-language',
+  'origin',
+  'referer',
+  'sec-fetch-dest',
+  'sec-fetch-mode',
+  'sec-fetch-site',
+  'sec-ch-ua',
+  'sec-ch-ua-mobile',
+  'sec-ch-ua-platform',
+])
+
 export class SpecService {
   /**
    * Infers a JSON schema from an array of sample objects.
    */
   inferSchema(bodies: any[]): any {
     if (bodies.length === 0) return {}
-    
+
     try {
-      const schemas = bodies.map(body => {
-        const data = typeof body === 'string' ? JSON.parse(body) : body
+      const schemas = bodies.map((body) => {
+        let data
+        console.log(
+          'inferSchema body type:',
+          typeof body,
+          'isBuffer:',
+          Buffer.isBuffer(body),
+          'constructor:',
+          body?.constructor?.name
+        )
+        if (Buffer.isBuffer(body) || body instanceof Uint8Array) {
+          const buf = Buffer.isBuffer(body) ? body : Buffer.from(body)
+          try {
+            data = JSON.parse(buf.toString('utf-8'))
+          } catch {
+            data = buf.toString('utf-8')
+          }
+        } else if (typeof body === 'string') {
+          try {
+            data = JSON.parse(body)
+          } catch {
+            data = body
+          }
+        } else {
+          data = body
+        }
         return toJsonSchema(data)
       })
 
@@ -18,25 +61,30 @@ export class SpecService {
 
       // Find all possible properties across all samples
       const allProps = new Set<string>()
-      schemas.forEach(s => {
+      schemas.forEach((s) => {
         if (s.type === 'object' && s.properties) {
-          Object.keys(s.properties).forEach(p => allProps.add(p))
+          Object.keys(s.properties).forEach((p) => allProps.add(p))
         }
       })
 
       // Identify required properties (those present in all samples BEFORE we modify anything)
-      const required = Array.from(allProps).filter(prop => {
-        return schemas.every(s => s.type === 'object' && s.properties && Object.prototype.hasOwnProperty.call(s.properties, prop))
+      const required = Array.from(allProps).filter((prop) => {
+        return schemas.every(
+          (s) =>
+            s.type === 'object' &&
+            s.properties &&
+            Object.prototype.hasOwnProperty.call(s.properties, prop)
+        )
       })
 
       // Construct merged schema
       const mergedSchema: any = {
         type: 'object',
-        properties: {}
+        properties: {},
       }
 
-      allProps.forEach(prop => {
-        const matchingSchema = schemas.find(s => s.properties && s.properties[prop])
+      allProps.forEach((prop) => {
+        const matchingSchema = schemas.find((s) => s.properties && s.properties[prop])
         if (matchingSchema && matchingSchema.properties) {
           mergedSchema.properties[prop] = matchingSchema.properties[prop]
         }
@@ -45,7 +93,7 @@ export class SpecService {
       if (required.length > 0) {
         mergedSchema.required = required
       }
-      
+
       return mergedSchema
     } catch {
       return { type: 'string' }
@@ -107,15 +155,71 @@ export class SpecService {
       },
     }
 
+    operation.parameters = []
+
     // Add path parameters from pattern (e.g., /api/users/{id})
     const paramMatches = pathPattern.match(/{([^}]+)}/g)
     if (paramMatches) {
-      operation.parameters = paramMatches.map((m) => ({
-        name: m.slice(1, -1),
-        in: 'path',
-        required: true,
+      operation.parameters.push(
+        ...paramMatches.map((m) => ({
+          name: m.slice(1, -1),
+          in: 'path',
+          required: true,
+          schema: { type: 'string' },
+        }))
+      )
+    }
+
+    // Extract query parameters
+    const queryParams = new Map<string, string>() // key -> last value
+    requests.forEach((r) => {
+      try {
+        const urlObj = new URL(r.url.startsWith('http') ? r.url : `http://dummy${r.url}`)
+        urlObj.searchParams.forEach((val, key) => queryParams.set(key, val))
+      } catch (e) {
+        // ignore invalid urls
+      }
+    })
+
+    queryParams.forEach((val, key) => {
+      const param: any = {
+        name: key,
+        in: 'query',
         schema: { type: 'string' },
-      }))
+      }
+      if (val) param.example = val
+      operation.parameters.push(param)
+    })
+
+    // Extract headers (non-standard and authorization)
+    const headerParams = new Map<string, { name: string; value: string | undefined }>() // lower -> original info
+    requests.forEach((r) => {
+      if (r.headers) {
+        Object.keys(r.headers).forEach((header) => {
+          const lowerHeader = header.toLowerCase()
+          if (!IGNORED_HEADERS.has(lowerHeader)) {
+            const existing = headerParams.get(lowerHeader)
+            headerParams.set(lowerHeader, {
+              name: existing ? existing.name : header,
+              value: r.headers[header],
+            })
+          }
+        })
+      }
+    })
+
+    headerParams.forEach((info) => {
+      const param: any = {
+        name: info.name,
+        in: 'header',
+        schema: { type: 'string' },
+      }
+      if (info.value) param.example = info.value
+      operation.parameters.push(param)
+    })
+
+    if (operation.parameters.length === 0) {
+      delete operation.parameters
     }
 
     // Infer request body schema if any

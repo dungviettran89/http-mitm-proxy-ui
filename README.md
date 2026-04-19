@@ -9,6 +9,7 @@ A self-contained Node.js package that bundles `http-mitm-proxy` with a modern we
 - **Real-time Traffic Inspection**: Live stream of HTTP/HTTPS requests and responses with WebSocket updates
 - **Complete Request/Response Details**: Headers, bodies, cookies, query parameters with syntax highlighting
 - **Advanced Filtering & Search**: Filter by domain, method, status code, content type with full-text search
+- **Auto-generated API Spec**: Automatically generate OpenAPI/Swagger specifications from intercepted traffic
 - **Export Data**: Export traffic as JSON or CSV for offline analysis and sharing
 - **HTTPS Interception**: Auto-generates and manages SSL certificates with easy CA download
 - **Standalone CLI**: Single command to start both proxy and UI with configurable options
@@ -187,6 +188,11 @@ npm test
 1. Capture and inspect all traffic for unexpected requests or data leaks
 2. Verify authorization headers and sensitive data in transit
 3. Export captured traffic as JSON or CSV for team analysis
+
+### API Documentation
+1. Capture traffic while navigating your application or running tests
+2. Switch to the Swagger Spec tab to view the auto-generated OpenAPI documentation
+3. Update the spec from live traffic as new endpoints are discovered
 
 ## Configuring Existing Applications to Use the Proxy
 

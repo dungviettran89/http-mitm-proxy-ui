@@ -3,6 +3,7 @@ import { onMounted, ref, watch } from 'vue'
 import SwaggerUIBundle from 'swagger-ui-dist/swagger-ui-bundle.js'
 import 'swagger-ui-dist/swagger-ui.css'
 import { useRequests } from '../composables/useRequests'
+import UpdateEndpointDialog from './UpdateEndpointDialog.vue'
 
 const props = defineProps<{
   spec: any
@@ -10,6 +11,7 @@ const props = defineProps<{
 
 const { updateEndpoint, resetSpec } = useRequests()
 const swaggerContainer = ref<HTMLElement | null>(null)
+const isUpdateDialogOpen = ref(false)
 let ui: any = null
 
 function initSwagger() {
@@ -38,17 +40,21 @@ onMounted(() => {
   initSwagger()
 })
 
-async function handleUpdateFromTraffic() {
-  const apiPath = prompt('Enter the API path to update (e.g. /api/users/{id})')
-  const method = prompt('Enter the HTTP method (e.g. GET)')
-  
-  if (apiPath && method) {
-    await updateEndpoint(apiPath, method)
-  }
+function handleUpdateFromTraffic() {
+  isUpdateDialogOpen.value = true
+}
+
+async function handleUpdateSubmit(data: { path: string; method: string }) {
+  isUpdateDialogOpen.value = false
+  await updateEndpoint(data.path, data.method)
 }
 
 async function handleResetSpec() {
-  if (confirm('Are you sure you want to reset the OpenAPI specification? You will need to re-map the paths.')) {
+  if (
+    confirm(
+      'Are you sure you want to reset the OpenAPI specification? You will need to re-map the paths.'
+    )
+  ) {
     await resetSpec()
   }
 }
@@ -57,14 +63,20 @@ async function handleResetSpec() {
 <template>
   <div class="swagger-ui-wrapper">
     <div class="swagger-ui-toolbar">
-       <button class="btn btn-outline btn-sm" @click="handleResetSpec" style="margin-right: 8px;">
-         Reset Spec
-       </button>
-       <button class="btn btn-primary btn-sm" @click="handleUpdateFromTraffic">
-         Update from Traffic
-       </button>
+      <button class="btn btn-outline btn-sm" @click="handleResetSpec" style="margin-right: 8px">
+        Reset Spec
+      </button>
+      <button class="btn btn-primary btn-sm" @click="handleUpdateFromTraffic">
+        Update from Traffic
+      </button>
     </div>
     <div id="swagger-ui" ref="swaggerContainer"></div>
+    <UpdateEndpointDialog
+      v-if="isUpdateDialogOpen"
+      :spec="spec"
+      @close="isUpdateDialogOpen = false"
+      @submit="handleUpdateSubmit"
+    />
   </div>
 </template>
 

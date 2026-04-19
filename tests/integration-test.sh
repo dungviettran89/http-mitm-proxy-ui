@@ -53,16 +53,14 @@ else
   exit 1
 fi
 
-# Use the pre-installed, pre-patched test-node-modules directory
-SERVER_ENTRY="$TEST_DIR/test-node-modules/node_modules/http-mitm-proxy-ui/dist/index.js"
+SERVER_ENTRY="$TEST_DIR/dist/index.js"
 if [[ ! -f "$SERVER_ENTRY" ]]; then
   echo "❌ Server entry point not found: $SERVER_ENTRY"
-  echo "   Run: cd test-node-modules && npm install ../http-mitm-proxy-ui-0.1.0.tgz"
   exit 1
 fi
 
 # Verify postinstall patch was applied by http-mitm-proxy-ui
-PROXY_JS="$TEST_DIR/test-node-modules/node_modules/http-mitm-proxy/dist/lib/proxy.js"
+PROXY_JS="$TEST_DIR/node_modules/http-mitm-proxy/dist/lib/proxy.js"
 if [[ -f "$PROXY_JS" ]] && grep -q 'host: "127.0.0.1"' "$PROXY_JS"; then
   echo "✅ http-mitm-proxy is patched (127.0.0.1) via postinstall"
 else
@@ -265,7 +263,30 @@ else
   echo "    ⚠️  CA directory not found (may be created on first HTTPS request)"
 fi
 
-# Step 8: Test clearing history
+# Step 8: Test OpenAPI Spec generation with query and headers
+echo ""
+echo "📄 Step 10: Testing OpenAPI Spec generation..."
+# Generate spec for the headers endpoint
+curl -s -X POST -H "Content-Type: application/json" -d '{"mappings":[{"pattern":"/headers","methods":["GET"]}]}' "http://127.0.0.1:$UI_PORT/api/spec/generate" > /tmp/spec.json
+if grep -q "x-test-header" /tmp/spec.json && grep -q "x-client" /tmp/spec.json; then
+  echo "    ✅ OpenAPI spec correctly extracted custom headers"
+else
+  echo "    ❌ OpenAPI spec failed to extract custom headers"
+  cat /tmp/spec.json
+  exit 1
+fi
+
+# Generate spec for the GET endpoint with query parameter
+curl -s -X POST -H "Content-Type: application/json" -d '{"mappings":[{"pattern":"/get","methods":["GET"]}]}' "http://127.0.0.1:$UI_PORT/api/spec/generate" > /tmp/spec2.json
+if grep -q '"name":"test"' /tmp/spec2.json && grep -q '"in":"query"' /tmp/spec2.json; then
+  echo "    ✅ OpenAPI spec correctly extracted query parameters"
+else
+  echo "    ❌ OpenAPI spec failed to extract query parameters"
+  cat /tmp/spec2.json
+  exit 1
+fi
+
+# Step 9: Test clearing history
 echo ""
 echo "🗑️  Step 10: Testing history clearing..."
 CLEAR_RESPONSE=$(curl -s -X DELETE "http://127.0.0.1:$UI_PORT/api/requests")

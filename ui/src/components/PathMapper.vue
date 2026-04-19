@@ -38,10 +38,10 @@ function initializeFromRequests() {
     const segments = entry.path
       .split('/')
       .filter((s) => s !== '')
-      .map((s, idx) => ({ 
-        value: s, 
+      .map((s, idx) => ({
+        value: s,
         isParam: false,
-        paramName: `param${idx + 1}`
+        paramName: `param${idx + 1}`,
       }))
     return {
       method: entry.method,
@@ -56,10 +56,10 @@ const groupedEntries = computed(() => {
   const groups = new Map<string, { pattern: string; methods: Set<string> }>()
 
   pathEntries.value.forEach((entry) => {
-    const pattern = '/' + entry.segments
-      .map((s) => (s.isParam ? `{${s.paramName || 'param'}}` : s.value))
-      .join('/')
-    
+    const pattern =
+      '/' +
+      entry.segments.map((s) => (s.isParam ? `{${s.paramName || 'param'}}` : s.value)).join('/')
+
     if (!groups.has(pattern)) {
       groups.set(pattern, { pattern, methods: new Set() })
     }

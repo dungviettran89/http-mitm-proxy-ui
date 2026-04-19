@@ -1,10 +1,4 @@
-import type {
-  RequestRecord,
-  ProxyConfig,
-  ApiResponse,
-  OpenApiSpec,
-  PathMapping,
-} from '../types'
+import type { RequestRecord, ProxyConfig, ApiResponse, OpenApiSpec, PathMapping } from '../types'
 
 const BASE_URL = ''
 
