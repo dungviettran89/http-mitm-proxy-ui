@@ -11,8 +11,8 @@ interface SerializableBuffer {
   data: number[]
 }
 
-/** A Buffer or its JSON-serializable representation */
-type MaybeBuffer = Buffer | SerializableBuffer
+/** A Buffer or its JSON-serializable representation or a string */
+type MaybeBuffer = Buffer | SerializableBuffer | string
 
 /** RequestRecord with all Buffers converted to SerializableBuffer */
 interface SerializableRequestRecord {
@@ -22,7 +22,7 @@ interface SerializableRequestRecord {
   url: string
   protocol: string
   headers: Record<string, string>
-  body?: MaybeBuffer
+  body?: SerializableBuffer | string
   contentType?: string
   requestTime?: number
   response?: SerializableResponseRecord
@@ -32,7 +32,7 @@ interface SerializableResponseRecord {
   statusCode: number
   statusMessage: string
   headers: Record<string, string>
-  body?: MaybeBuffer
+  body?: SerializableBuffer | string
   contentType?: string
   responseTime?: number
 }
@@ -42,22 +42,24 @@ interface Database {
 }
 
 /**
- * Convert a Buffer (or plain object with {type, data}) to our serializable form.
+ * Convert a Buffer, string or plain object with {type, data} to our serializable form.
  */
 function bufferToSerializable(
-  value: Buffer | Record<string, unknown> | undefined
-): SerializableBuffer | undefined {
+  value: Buffer | Record<string, unknown> | string | undefined
+): SerializableBuffer | string | undefined {
   if (!value) return undefined
+  // Already a string
+  if (typeof value === 'string') return value
   // Already a Node.js Buffer
   if (Buffer.isBuffer(value)) {
     return { __type: 'Buffer', data: Array.from(value) }
   }
   // Already our serializable form
-  if ('__type' in value && (value as any).__type === 'Buffer') {
+  if (typeof value === 'object' && '__type' in value && (value as any).__type === 'Buffer') {
     return value as unknown as SerializableBuffer
   }
   // Plain object with data array (from http-mitm-proxy's Buffer.toJSON)
-  if ('data' in value && Array.isArray((value as any).data)) {
+  if (typeof value === 'object' && 'data' in value && Array.isArray((value as any).data)) {
     return { __type: 'Buffer', data: (value as any).data }
   }
   return undefined
@@ -66,14 +68,19 @@ function bufferToSerializable(
 /**
  * Convert a serializable buffer back to a real Buffer.
  */
-function bufferFromSerializable(value: MaybeBuffer | undefined): Buffer | undefined {
+function bufferFromSerializable(value: MaybeBuffer | undefined): Buffer | string | undefined {
   if (!value) return undefined
+  if (typeof value === 'string') return value
   if (Buffer.isBuffer(value)) return value
-  if ('__type' in value && (value as SerializableBuffer).__type === 'Buffer') {
+  if (
+    typeof value === 'object' &&
+    '__type' in value &&
+    (value as SerializableBuffer).__type === 'Buffer'
+  ) {
     return Buffer.from((value as SerializableBuffer).data)
   }
   // Fallback: plain object with data array
-  if ('data' in value && Array.isArray((value as any).data)) {
+  if (typeof value === 'object' && 'data' in value && Array.isArray((value as any).data)) {
     return Buffer.from((value as any).data)
   }
   return undefined
