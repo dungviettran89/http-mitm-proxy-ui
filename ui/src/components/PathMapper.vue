@@ -124,7 +124,7 @@ initializeFromRequests()
                   :class="{ 'is-param': segment.isParam }"
                   @click="toggleParam(eIdx, sIdx)"
                 >
-                  {{ segment.isParam ? `{${segment.paramName}}` : segment.value }}
+                  {{ segment.isParam ? '{' + segment.paramName + '}' : segment.value }}
                 </span>
                 <input
                   v-if="segment.isParam"
