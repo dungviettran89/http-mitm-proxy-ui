@@ -1,6 +1,6 @@
 {
   "name": "http-mitm-proxy-ui",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "HTTP MITM Proxy with a web-based UI for inspecting and modifying traffic",
   "bin": {
     "http-mitm-proxy-ui": "dist/index.js"
