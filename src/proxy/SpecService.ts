@@ -36,8 +36,8 @@ export class SpecService {
       }
 
       allProps.forEach(prop => {
-        const matchingSchema = schemas.find(s => s.properties?.[prop])
-        if (matchingSchema) {
+        const matchingSchema = schemas.find(s => s.properties && s.properties[prop])
+        if (matchingSchema && matchingSchema.properties) {
           mergedSchema.properties[prop] = matchingSchema.properties[prop]
         }
       })
@@ -79,7 +79,7 @@ export class SpecService {
         })
 
         if (matchingRequests.length > 0) {
-          pathOps[method.toLowerCase()] = this.generateOperation(matchingRequests)
+          pathOps[method.toLowerCase()] = this.generateOperation(pathPattern, matchingRequests)
         }
       }
 
@@ -97,7 +97,7 @@ export class SpecService {
     return regex.test(path)
   }
 
-  private generateOperation(requests: RequestRecord[]): any {
+  private generateOperation(pathPattern: string, requests: RequestRecord[]): any {
     const operation: any = {
       responses: {
         '200': {
@@ -105,6 +105,17 @@ export class SpecService {
           content: {},
         },
       },
+    }
+
+    // Add path parameters from pattern (e.g., /api/users/{id})
+    const paramMatches = pathPattern.match(/{([^}]+)}/g)
+    if (paramMatches) {
+      operation.parameters = paramMatches.map((m) => ({
+        name: m.slice(1, -1),
+        in: 'path',
+        required: true,
+        schema: { type: 'string' },
+      }))
     }
 
     // Infer request body schema if any

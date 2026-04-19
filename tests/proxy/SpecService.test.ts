@@ -29,3 +29,31 @@ test('SpecService.matchPath', () => {
   assert.ok(!service.matchPath('/api/users/{id}', '/api/users/123/posts'))
   assert.ok(service.matchPath('/api/users/{id}/posts', '/api/users/123/posts'))
 })
+
+test('SpecService.generateSpec with path parameters', () => {
+  const service = new SpecService()
+  const mappings = [
+    { pattern: '/api/users/{userId}', methods: ['GET'] }
+  ]
+  const requests: any[] = [
+    {
+      method: 'GET',
+      url: 'http://example.com/api/users/123',
+      response: { body: JSON.stringify({ id: 123, name: 'User 123' }) }
+    }
+  ]
+  
+  const spec = service.generateSpec(mappings, requests)
+  
+  assert.ok(spec.paths['/api/users/{userId}'])
+  const getOp = spec.paths['/api/users/{userId}'].get
+  assert.ok(getOp)
+  assert.strictEqual(getOp.parameters.length, 1)
+  assert.strictEqual(getOp.parameters[0].name, 'userId')
+  assert.strictEqual(getOp.parameters[0].in, 'path')
+  
+  const responseSchema = getOp.responses['200'].content['application/json'].schema
+  assert.strictEqual(responseSchema.type, 'object')
+  assert.strictEqual(responseSchema.properties.id.type, 'integer')
+  assert.strictEqual(responseSchema.properties.name.type, 'string')
+})
